@@ -1,88 +1,90 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
-import { useStore } from '@/store';
-import chs from '@/ys/locale/chs'
-import PresetData from "@/ys/data/preset"
-import CharacterData from '@/ys/data/character';
+import { ref, computed } from "vue";
+import { useStore } from "@/store";
+import chs from "@/ys/locale/chs";
+import { PresetData, CharacterData } from "@/ys/data";
 
-const store = useStore()
+const store = useStore();
 
 interface IOption {
-    value: string | number
-    label: string
+    value: string | number;
+    label: string;
 }
 
 const props = defineProps<{
-    modelValue: boolean
-}>()
+    modelValue: boolean;
+}>();
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: boolean): void
-}>()
+    (e: "update:modelValue", value: boolean): void;
+}>();
 const show = computed<boolean>({
     get() {
-        return props.modelValue
+        return props.modelValue;
     },
     set(value) {
-        emit('update:modelValue', value)
-    }
-})
-const element = ref("")
-const character = ref("")
+        emit("update:modelValue", value);
+    },
+});
+const element = ref("");
+const character = ref("");
 const characters = computed<IOption[]>(() => {
-    let ret = []
+    let ret = [];
     for (let c in CharacterData) {
         if (CharacterData[c].element == element.value) {
             ret.push({
                 value: c,
-                label: chs.character[c]
-            })
+                label: chs.character[c],
+            });
         }
     }
-    return ret
-})
-const preset = ref("")
+    return ret;
+});
+const preset = ref("");
 const presets = computed<IOption[]>(() => {
-    let ret = []
+    let ret = [];
     for (let c in CharacterData) {
         if (c == character.value) {
             for (let i of CharacterData[c].presets) {
                 ret.push({
                     value: i,
-                    label: chs.preset[i]
-                })
+                    label: i,
+                });
             }
-            break
+            break;
         }
     }
-    return ret
-})
+    return ret;
+});
 const changeElement = () => {
-    character.value = ""
-    preset.value = ""
-}
+    character.value = "";
+    preset.value = "";
+};
 const changeCharacter = () => {
-    preset.value = ""
-}
-const applyDisabled = computed(() => {
-    return preset.value == ""
-})
+    preset.value = "";
+};
 const apply = () => {
-    store.commit('usePreset', { weight: PresetData[preset.value] })
-    emit('update:modelValue', false)
-}
+    store.commit("usePreset", { presetKey: preset.value });
+    emit("update:modelValue", false);
+};
 </script>
 
 <template>
     <el-dialog title="词条权重预设" v-model="show">
         <p class="info">
             数据来自
-            <a href="http://spongem.com/ajglz/ys/ys.html">圣遗物副词条数便捷计算器</a>
+            <a href="http://spongem.com/ajglz/ys/ys.html"
+                >圣遗物副词条数便捷计算器</a
+            >
         </p>
         <el-row justify="space-between">
             <el-col :span="8">元素类型</el-col>
             <el-col :span="8">
                 <el-select v-model="element" @change="changeElement">
-                    <el-option v-for="(label, value) in chs.element" :label="label" :value="value" />
+                    <el-option
+                        v-for="(label, value) in chs.element"
+                        :label="label"
+                        :value="value"
+                    />
                 </el-select>
             </el-col>
         </el-row>
@@ -90,7 +92,11 @@ const apply = () => {
             <el-col :span="8">角色</el-col>
             <el-col :span="8">
                 <el-select v-model="character" @change="changeCharacter">
-                    <el-option v-for="o in characters" :label="o.label" :value="o.value" />
+                    <el-option
+                        v-for="o in characters"
+                        :label="o.label"
+                        :value="o.value"
+                    />
                 </el-select>
             </el-col>
         </el-row>
@@ -98,12 +104,18 @@ const apply = () => {
             <el-col :span="8">预设</el-col>
             <el-col :span="8">
                 <el-select v-model="preset">
-                    <el-option v-for="o in presets" :label="o.label" :value="o.value" />
+                    <el-option
+                        v-for="o in presets"
+                        :label="o.label"
+                        :value="o.value"
+                    />
                 </el-select>
             </el-col>
         </el-row>
-        <el-row justify="center" style="margin-top: 30px;">
-            <el-button type="primary" @click="apply" :disabled="applyDisabled">应用</el-button>
+        <el-row justify="center" style="margin-top: 30px">
+            <el-button type="primary" @click="apply" :disabled="!preset">
+                应用
+            </el-button>
         </el-row>
     </el-dialog>
 </template>

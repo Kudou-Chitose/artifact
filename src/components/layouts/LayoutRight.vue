@@ -1,12 +1,13 @@
 <script lang="ts" setup>
-import ImportSection from '@/components/sections/ImportSection.vue';
-import WeightSection from '@/components/sections/WeightSection.vue'
-import FilterSection from '@/components/sections/FilterSection.vue';
-import SortSection from '@/components/sections/SortSection.vue';
-import TextButton from '@/components/widgets/TextButton.vue';
-import { useStore } from '@/store';
-const store = useStore()
-const start = () => { store.dispatch('updFilteredArtifacts') }
+import ImportSection from "@/components/sections/ImportSection.vue";
+import FilterSection from "@/components/sections/FilterSection.vue";
+import SortSection from "@/components/sections/SortSection.vue";
+import TextButton from "@/components/widgets/TextButton.vue";
+import { useStore } from "@/store";
+const store = useStore();
+const start = () => {
+    store.dispatch("updFilteredArtifacts");
+};
 </script>
 
 <template>
@@ -14,7 +15,6 @@ const start = () => { store.dispatch('updFilteredArtifacts') }
         <el-scrollbar>
             <import-section />
             <filter-section />
-            <weight-section />
             <sort-section />
             <div class="start-container">
                 <text-button @click="start">开始计算</text-button>

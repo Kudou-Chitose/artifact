@@ -54,7 +54,6 @@ declare module 'vue' {
     SortSection: typeof import('./src/components/sections/SortSection.vue')['default']
     TextButton: typeof import('./src/components/widgets/TextButton.vue')['default']
     ValueButton: typeof import('./src/components/widgets/ValueButton.vue')['default']
-    WeightSection: typeof import('./src/components/sections/WeightSection.vue')['default']
     YasConfigurator: typeof import('./src/components/dialogs/YasConfigurator.vue')['default']
   }
 }

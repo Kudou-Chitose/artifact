@@ -3,7 +3,7 @@
  * 配装：https://ngabbs.com/read.php?tid=27859119
  */
 
-export interface IBuildData {
+interface IBuildData {
     set: string[];
     main: {
         [slotKey: string]: string[];

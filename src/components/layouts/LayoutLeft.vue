@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import ArtifactCard from "@/components/widgets/ArtifactCard.vue";
 import ArtifactEditor from "@/components/dialogs/ArtifactEditor.vue";
-import ArtifactStats from "@/components/dialogs/ArtifactStats.vue"
+import ArtifactStats from "@/components/dialogs/ArtifactStats.vue";
 import ArtifactCreator from "@/components/dialogs/ArtifactCreator.vue";
 import ArtifactGenerator from "@/components/dialogs/ArtifactGenerator.vue";
 import PartialExport from "@/components/dialogs/PartialExport.vue";
@@ -137,12 +137,12 @@ const edit = (index: number) => {
     showEditor.value = true;
 };
 // stats
-const showStats = ref(false)
-const statsArt = ref<Artifact>()
+const showStats = ref(false);
+const statsArt = ref<Artifact>();
 const stats = (art: Artifact) => {
-    statsArt.value = art
-    showStats.value = true
-}
+    statsArt.value = art;
+    showStats.value = true;
+};
 // export
 const showExport = ref(false);
 const artifactsToExport = ref<Artifact[]>([]);
@@ -160,12 +160,14 @@ const exportSelection = () => {
 // })
 // 倒序
 const reverseOrder = computed({
-    get() { return store.state.artMode.reverseOrder },
+    get() {
+        return store.state.artMode.reverseOrder;
+    },
     set(v) {
-        store.commit('setArtMode', { reverseOrder: v })
+        store.commit("setArtMode", { reverseOrder: v });
         store.dispatch("reload"); // 强制刷新virtual-scroll-grid
-    }
-})
+    },
+});
 // 圣遗物列表
 const artifacts = computed(() => {
     if (reverseOrder.value) {
@@ -205,9 +207,13 @@ const showCreator = ref(false);
 const showGenerator = ref(false);
 // 相似圣遗物
 const alikeEnabled = computed({
-    get() { return store.state.artMode.alikeEnabled },
-    set(v) { store.commit('setArtMode', { alikeEnabled: v }) }
-})
+    get() {
+        return store.state.artMode.alikeEnabled;
+    },
+    set(v) {
+        store.commit("setArtMode", { alikeEnabled: v });
+    },
+});
 const showAlike = ref(false);
 const targetIndex = ref(-1);
 </script>
@@ -218,50 +224,81 @@ const targetIndex = ref(-1);
             <div class="artifact-opts">
                 <div class="stat">{{ stat }}</div>
                 <div class="btns">
-                    <div :class="{ btn: true, checked: reverseOrder }" @click="reverseOrder = !reverseOrder">
+                    <div
+                        :class="{ btn: true, checked: reverseOrder }"
+                        @click="reverseOrder = !reverseOrder"
+                    >
                         <el-icon>
                             <Sort />
                         </el-icon>
                         <span>倒序</span>
                     </div>
-                    <div :class="{ btn: true, checked: alikeEnabled }" @click="alikeEnabled = !alikeEnabled"
-                        title="加解锁时联想相似圣遗物">
+                    <div
+                        :class="{ btn: true, checked: alikeEnabled }"
+                        @click="alikeEnabled = !alikeEnabled"
+                        title="加解锁时联想相似圣遗物"
+                    >
                         <el-icon>
                             <Stopwatch />
                         </el-icon>
                         <span>联想</span>
                     </div>
-                    <div :class="{ btn: true, checked: useMaxAsUnit }" @click="useMaxAsUnit = !useMaxAsUnit">
+                    <div
+                        :class="{ btn: true, checked: useMaxAsUnit }"
+                        @click="useMaxAsUnit = !useMaxAsUnit"
+                    >
                         <el-icon>
                             <View />
                         </el-icon>
                         <span>×0.85</span>
                     </div>
-                    <div :class="{ btn: true, checked: showAffnum }" @click="showAffnum = !showAffnum">
+                    <div
+                        :class="{ btn: true, checked: showAffnum }"
+                        @click="showAffnum = !showAffnum"
+                    >
                         <el-icon>
                             <View />
                         </el-icon>
                         <span>显示词条数</span>
                     </div>
-                    <div class="btn" @click="showCreator = true" title="手动添加">
+                    <div
+                        class="btn"
+                        @click="showCreator = true"
+                        title="手动添加"
+                    >
                         <el-icon>
                             <circle-plus />
                         </el-icon>
                     </div>
-                    <div class="btn" @click="showGenerator = true" title="随机生成">
+                    <div
+                        class="btn"
+                        @click="showGenerator = true"
+                        title="随机生成"
+                    >
                         <el-icon>
                             <magic-stick />
                         </el-icon>
                     </div>
                 </div>
             </div>
-            <Grid class="artifact-grid" :key="store.state.nReload" :length="artifacts.length" :page-size="50"
-                :page-provider="pageProvider">
+            <Grid
+                class="artifact-grid"
+                :key="store.state.nReload"
+                :length="artifacts.length"
+                :page-size="50"
+                :page-provider="pageProvider"
+            >
                 <template v-slot:default="{ item, style, index }">
                     <div class="artifact-cell" :style="style">
-                        <artifact-card :artifact="item" :select-mode="selectMode" :selected="selected(item.data.index)"
-                            @flip-select="flipSelect(item.data.index, $event)" @flip-lock="flipLock(item.data.index)"
-                            @edit="edit(item.data.index)" @stats="stats(item)" />
+                        <artifact-card
+                            :artifact="item"
+                            :select-mode="selectMode"
+                            :selected="selected(item.data.index)"
+                            @flip-select="flipSelect(item.data.index, $event)"
+                            @flip-lock="flipLock(item.data.index)"
+                            @edit="edit(item.data.index)"
+                            @stats="stats(item)"
+                        />
                     </div>
                 </template>
             </Grid>
