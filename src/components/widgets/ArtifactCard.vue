@@ -165,12 +165,12 @@ const pBuildResultStr = computed(() => {
     // formatting
     return (
         probs.map((x) => x[0] + (x[1] * 100).toFixed(1) + "%").join(" ") ||
-        "（无）"
+        "<0.1%"
     );
 });
 const defeatResultStr = computed(() => {
     let result = store.state.sortResults!.get(props.artifact) as IDefeatResult;
-    return result;
+    return result.defeat;
 });
 </script>
 
@@ -189,7 +189,13 @@ const defeatResultStr = computed(() => {
         </div>
         <div class="body">
             <div class="body-head">
-                <span class="level">{{ level }}</span>
+                <span
+                    :class="{
+                        level: true,
+                        full: artifact.level == 20,
+                    }"
+                    v-text="level"
+                />
                 <div class="lock-img-container">
                     <img
                         :src="lockImgSrc"
@@ -329,6 +335,10 @@ const defeatResultStr = computed(() => {
             .level {
                 @extend %tag;
                 background-color: #333;
+
+                &.full {
+                    background-color: #66c238;
+                }
             }
 
             .lock-img-container {
@@ -403,14 +413,14 @@ const defeatResultStr = computed(() => {
             }
 
             .pbuild {
-                background: #a6a6a6;
+                background: cornflowerblue;
                 width: 100%;
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
 
             .defeat {
-                background: #a6a6a6;
+                background: lightcoral;
                 width: 100%;
             }
         }

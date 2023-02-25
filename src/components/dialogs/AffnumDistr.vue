@@ -206,64 +206,68 @@ const option2 = ref({
     ],
 });
 
+const updPlots = () => {
+    if (!props.art) return false;
+    if (!store.state.sortResults || store.state.sortResultType != "affnum")
+        return false;
+    let result = store.state.sortResults.get(props.art) as IAffnumResult;
+    if (!result) return false;
+    // calc PDFs
+    pdfs.value = [];
+    let curLv = Math.floor(props.art.level / 4),
+        cur = Math.round(result.cur * 10);
+    for (let i = curLv; i <= 5; ++i) {
+        let label = i < 5 ? `${i * 4} +` : `20`;
+        let data = getIncrePDF(
+            props.art.mainKey,
+            result.weight,
+            props.art.minors.map((m) => m.key),
+            i - curLv
+        );
+        data = zeros(cur).concat(data);
+        pdfs.value.push({ label, data });
+    }
+    // calc pdfs2
+    cdf2 = getAffnumCDF(props.art.mainKey, result.weight, 5);
+    let p = ArtifactData.mainDistr[props.art.slot][props.art.mainKey] / 5;
+    pdfs2 = counts.map((c) => {
+        let n = parseInt(c);
+        return {
+            label: c,
+            data: toPDF(cdf2.map((x) => (p * x + 1 - p) ** n)),
+        };
+    });
+    // update xAxis
+    let N = 90;
+    option.value.xAxis.data = [];
+    for (let i = 0; i < N; ++i) {
+        option.value.xAxis.data.push(toAffnum(i));
+    }
+    option2.value.xAxis.data = option.value.xAxis.data;
+    // pad zeros
+    pdfs.value.forEach((p) => {
+        while (p.data.length < N) {
+            p.data.push(0);
+        }
+    });
+    pdfs2.forEach((p) => {
+        while (p.data.length < N) {
+            p.data.push(0);
+        }
+    });
+    // update plot
+    setLevel("20");
+    setCount("100");
+    return true;
+};
+
 watch(
     () => props.modelValue,
-    (show) => {
-        if (
-            !show ||
-            !props.art ||
-            !store.state.sortResults ||
-            !store.state.sortResults.has(props.art)
-        )
-            return;
-        let result = store.state.sortResults.get(props.art) as IAffnumResult;
-        if (!("cur" in result) || !("weight" in result)) return;
-        // calc PDFs
-        pdfs.value = [];
-        let curLv = Math.floor(props.art.level / 4),
-            cur = Math.round(result.cur * 10);
-        for (let i = curLv; i <= 5; ++i) {
-            let label = i < 5 ? `${i * 4} +` : `20`;
-            let data = getIncrePDF(
-                props.art.mainKey,
-                result.weight,
-                props.art.minors.map((m) => m.key),
-                i - curLv
-            );
-            data = zeros(cur).concat(data);
-            pdfs.value.push({ label, data });
+    (value) => {
+        if (!value) return;
+        if (!updPlots()) {
+            show.value = false;
         }
-        // calc pdfs2
-        cdf2 = getAffnumCDF(props.art.mainKey, result.weight, 5);
-        let p = ArtifactData.mainDistr[props.art.slot][props.art.mainKey] / 5;
-        pdfs2 = counts.map((c) => {
-            let n = parseInt(c);
-            return {
-                label: c,
-                data: toPDF(cdf2.map((x) => (p * x + 1 - p) ** n)),
-            };
-        });
-        // update xAxis
-        let N = 90;
-        option.value.xAxis.data = [];
-        for (let i = 0; i < N; ++i) {
-            option.value.xAxis.data.push(toAffnum(i));
-        }
-        option2.value.xAxis.data = option.value.xAxis.data;
-        // pad zeros
-        pdfs.value.forEach((p) => {
-            while (p.data.length < N) {
-                p.data.push(0);
-            }
-        });
-        pdfs2.forEach((p) => {
-            while (p.data.length < N) {
-                p.data.push(0);
-            }
-        });
-        // update plot
-        setLevel("20");
-        setCount("100");
     }
 );
 </script>

@@ -1,9 +1,21 @@
 import { Artifact } from "../artifact";
 import { calcAffnum } from "./affnum";
 import { SimpleCache } from "../utils";
-import type { IWeight, IBuild } from "../types";
+import type { IWeight } from "../types";
 import { ArtifactData } from "../data";
 import { getAffnumCDF } from "../gacha/artifact";
+
+export interface IBuild {
+    key: string;
+    name: string;
+    set: string[];
+    main: {
+        [slotKey: string]: string[];
+    };
+    weight: {
+        [affixKey: string]: number;
+    };
+}
 
 export interface IPBuildResult {
     maxProb: number;
@@ -14,7 +26,11 @@ export type IPBuildResults = Map<Artifact, IPBuildResult>;
 
 const AffnumCDFCache = new SimpleCache(
     ({ mainKey, weight }: { mainKey: string; weight: IWeight }) => {
-        return getAffnumCDF(mainKey, weight);
+        let w = { ...weight };
+        ArtifactData.minorKeys.forEach((key) => {
+            w[key] ||= 0;
+        });
+        return getAffnumCDF(mainKey, w);
     }
 );
 

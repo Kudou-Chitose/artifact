@@ -1,4 +1,4 @@
-import { ITable, IWeight } from "@/ys/types";
+import { IWeight, ISetBonusTable, IAffixWeightTable } from "@/ys/types";
 import { unzipSync } from "zlib";
 
 class Item {
@@ -63,8 +63,8 @@ const Storage = {
         version: new Item("yas.version"),
     },
     builds: new TypedItem<object[]>("builds", []),
-    setBonusTable: new TypedItem<ITable>("setBonusTable", {}),
-    affixWeightTable: new TypedItem<ITable>("affixWeightTable", {}),
+    setBonusTable: new TypedItem<ISetBonusTable>("setBonusTable", {}),
+    affixWeightTable: new TypedItem<IAffixWeightTable>("affixWeightTable", []),
     sort: {
         by: new TypedItem<string>("sort.by", "avg"),
         weight: new TypedItem<IWeight>("sort.weight", {

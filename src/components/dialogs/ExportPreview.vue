@@ -173,7 +173,7 @@ const exportArts = () => {
         <div style="margin-top: 10px" v-show="!store.state.ws.connected">
             <el-checkbox v-model="remember"
                 >记住本次更改，下次导出时将不再包含以上圣遗物</el-checkbox
-            >
+            ><br />
             <el-checkbox v-model="useLockV2"
                 >导出格式为v2（yas-lock v1.0.9-beta1起支持）</el-checkbox
             >
@@ -187,7 +187,7 @@ const exportArts = () => {
     </el-dialog>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .preview-artifact-list {
     display: flex;
     width: 100%;

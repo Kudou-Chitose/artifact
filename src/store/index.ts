@@ -17,6 +17,12 @@ const LOADING_DELAY = 250;
 function getBuilds() {
     // 读取localStorage
     let builds = storage.builds.value as IBuild[];
+    // 删除残余的小攻/生/防
+    builds.forEach((b) => {
+        delete b.weight["atk"];
+        delete b.weight["hp"];
+        delete b.weight["def"];
+    });
     // 增量更新
     let keys = new Set(
         builds.reduce((p, c) => p.concat([c.key]), [] as string[])
@@ -204,11 +210,7 @@ export const store = createStore<IState>({
                 // sort
                 switch (state.sort.by) {
                     case "avg":
-                        state.sortResults = AffnumSort.sort(
-                            ret,
-                            {},
-                            { "*:*": state.sort.weight }
-                        );
+                        state.sortResults = AffnumSort.sort(ret, {}, []);
                         state.sortResultType = "affnum";
                         break;
                     case "avgpro":

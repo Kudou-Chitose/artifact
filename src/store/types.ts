@@ -1,6 +1,11 @@
 import { Artifact } from "../ys/artifact";
 import { assign } from "./utils";
-import type { ITable, IBuild, IWeight } from "@/ys/types";
+import type {
+    IBuild,
+    IWeight,
+    ISetBonusTable,
+    IAffixWeightTable,
+} from "@/ys/types";
 import type { IAffnumResults, IPBuildResults, IDefeatResults } from "@/ys/sort";
 
 export interface IOption {
@@ -15,6 +20,15 @@ export interface ICharOption {
     name?: string;
     tip?: string;
 }
+
+export type ISortBy =
+    | "avg"
+    | "avgpro"
+    | "psingle"
+    | "pmulti"
+    | "defeat"
+    | "index";
+export type ISortResultType = "affnum" | "pbuild" | "defeat";
 
 export interface IYasConfig {
     max_row: number;
@@ -88,10 +102,10 @@ export interface IState {
         circlet: string[];
     };
     builds: IBuild[];
-    setBonusTable: ITable;
-    affixWeightTable: ITable;
+    setBonusTable: ISetBonusTable;
+    affixWeightTable: IAffixWeightTable;
     sortResults?: IAffnumResults | IPBuildResults | IDefeatResults;
-    sortResultType?: string;
+    sortResultType?: "affnum" | "pbuild" | "defeat";
     artMode: {
         [key: string]: any; // allow string key
         showAffnum: boolean; // 展示词条数而不是数值

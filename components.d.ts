@@ -4,15 +4,16 @@
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AffnumDistr: typeof import('./src/components/dialogs/AffnumDistr.vue')['default']
     AlikeLocker: typeof import('./src/components/dialogs/AlikeLocker.vue')['default']
     ArtifactCard: typeof import('./src/components/widgets/ArtifactCard.vue')['default']
     ArtifactCreator: typeof import('./src/components/dialogs/ArtifactCreator.vue')['default']
     ArtifactEditor: typeof import('./src/components/dialogs/ArtifactEditor.vue')['default']
     ArtifactGenerator: typeof import('./src/components/dialogs/ArtifactGenerator.vue')['default']
-    ArtifactStats: typeof import('./src/components/dialogs/ArtifactStats.vue')['default']
     BuildEditor: typeof import('./src/components/dialogs/BuildEditor.vue')['default']
     BuildLoader: typeof import('./src/components/dialogs/BuildLoader.vue')['default']
     CharSelect: typeof import('./src/components/widgets/CharSelect.vue')['default']
+    DefeatList: typeof import('./src/components/dialogs/DefeatList.vue')['default']
     ElAlert: typeof import('element-plus/es')['ElAlert']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']

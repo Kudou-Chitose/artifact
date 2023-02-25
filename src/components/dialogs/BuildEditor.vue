@@ -135,6 +135,7 @@ const selectBuild = (key?: string) => {
     }
 };
 selectBuild();
+const minorKeys = ["hpp", "atkp", "defp", "em", "er", "cr", "cd"];
 const rules = reactive({
     name: [{ required: true, message: "必填", trigger: "blur" }],
     weightJson: [
@@ -145,10 +146,10 @@ const rules = reactive({
                     let w = JSON.parse(value);
                     if (typeof w != "object")
                         return callback(new Error("格式错误"));
-                    if (ArtifactData.minorKeys.length != Object.keys(w).length)
+                    if (minorKeys.length != Object.keys(w).length)
                         return callback(new Error("键缺失或多余"));
                     for (let key in w) {
-                        if (!ArtifactData.minorKeys.includes(key))
+                        if (!minorKeys.includes(key))
                             return callback(new Error("不存在的键：" + key));
                         if (typeof w[key] != "number")
                             return callback(new Error(key + "的值不是数值"));
@@ -276,13 +277,7 @@ const delCustomBuilds = () => {
 </script>
 
 <template>
-    <el-dialog
-        v-model="show"
-        title="修改角色配装"
-        top="2vh"
-        bottom="2vh"
-        width="90%"
-    >
+    <el-dialog v-model="show" title="修改角色配装" top="2vh" width="90%">
         <div id="root">
             <div id="left">
                 <div id="left-top">
@@ -401,7 +396,8 @@ const delCustomBuilds = () => {
                                 :closable="false"
                                 style="line-height: 1.4"
                             >
-                                hp=小生命，hpp=大生命，atk=小攻击，atkp=大攻击，def=小防御，defp=大防御，em=精通，er=充能，cr=暴击，cd=爆伤
+                                hpp=大生命，atkp=大攻击，defp=大防御，em=精通，er=充能，cr=暴击，cd=爆伤。
+                                小攻/生/防权重为0。
                             </el-alert>
                         </el-form-item>
                         <el-form-item>

@@ -1,6 +1,9 @@
 import { Artifact } from "../artifact";
 
-export type IDefeatResult = number;
+export interface IDefeatResult {
+    defeat: number;
+    by: Artifact[];
+}
 
 export type IDefeatResults = Map<Artifact, IDefeatResult>;
 
@@ -34,7 +37,7 @@ export function sort(arts: Artifact[]): IDefeatResults {
         } else {
             bins[categoryKey] = [a];
         }
-        results.set(a, 0);
+        results.set(a, { defeat: 0, by: [] });
         mvecs.set(a, [0, 0, 0, 0, 0, 0, 0]);
         for (let m of a.minors) {
             // ignore atk, def and hp
@@ -57,15 +60,17 @@ export function sort(arts: Artifact[]): IDefeatResults {
                 }
                 // only if these one cnt is 7 and the other <7, update defeat
                 if (cnt_a_over_b == 7 && cnt_b_over_a < 7) {
-                    results.set(b, results.get(b)! + 1);
+                    results.get(b)!.defeat++;
+                    results.get(b)!.by.push(a);
                 } else if (cnt_b_over_a == 7 && cnt_a_over_b < 7) {
-                    results.set(a, results.get(a)! + 1);
+                    results.get(a)!.defeat++;
+                    results.get(a)!.by.push(b);
                 }
             }
         }
     }
-    // sort by defeat, break ties arbitariliy
-    arts.sort((a, b) => results.get(a)! - results.get(b)!);
+    // sort by defeat, break ties arbitrarily
+    arts.sort((a, b) => results.get(a)!.defeat - results.get(b)!.defeat);
 
     return results;
 }

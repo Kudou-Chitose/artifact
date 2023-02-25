@@ -204,6 +204,17 @@ const openBuildEditor = () => (showBuildEditor.value = true);
                         v-text="'加载配装'"
                     />
                 </p>
+                <p class="info" style="margin-top: 10px">
+                    词条权重（点按粗调，拖拽微调，悬停查看数值）
+                </p>
+                <value-button
+                    class="weight-button"
+                    v-for="(_, key) in store.state.sort.weight"
+                    :model-value="store.state.sort.weight[key]"
+                    @update:model-value="setWeight(key as string, $event)"
+                >
+                    {{ (chs.affix as any)[key] }}
+                </value-button>
                 <multi-select
                     class="row"
                     v-model="sets"

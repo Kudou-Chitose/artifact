@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import ArtifactCard from "@/components/widgets/ArtifactCard.vue";
 import ArtifactEditor from "@/components/dialogs/ArtifactEditor.vue";
-import ArtifactStats from "@/components/dialogs/ArtifactStats.vue";
+import AffnumDistr from "@/components/dialogs/AffnumDistr.vue";
 import ArtifactCreator from "@/components/dialogs/ArtifactCreator.vue";
 import ArtifactGenerator from "@/components/dialogs/ArtifactGenerator.vue";
 import PartialExport from "@/components/dialogs/PartialExport.vue";
 import AlikeLocker from "@/components/dialogs/AlikeLocker.vue";
+import DefeatList from "@/components/dialogs/DefeatList.vue";
 import Grid from "vue-virtual-scroll-grid";
 import { useStore } from "@/store";
 import { computed, ref, watch } from "vue";
@@ -137,11 +138,23 @@ const edit = (index: number) => {
     showEditor.value = true;
 };
 // stats
-const showStats = ref(false);
 const statsArt = ref<Artifact>();
+const showAffnumDistr = ref(false);
+const showDefeatList = ref(false);
+const showPBuildList = ref(false);
 const stats = (art: Artifact) => {
     statsArt.value = art;
-    showStats.value = true;
+    switch (store.state.sortResultType) {
+        case "affnum":
+            showAffnumDistr.value = true;
+            break;
+        case "defeat":
+            showDefeatList.value = true;
+            break;
+        case "pbuild":
+            showPBuildList.value = true;
+            break;
+    }
 };
 // export
 const showExport = ref(false);
@@ -320,11 +333,12 @@ const targetIndex = ref(-1);
         </el-scrollbar>
     </div>
     <artifact-editor v-model="showEditor" :index="editorIndex" />
-    <artifact-stats v-model="showStats" :art="statsArt" />
     <artifact-creator v-model="showCreator" />
     <artifact-generator v-model="showGenerator" />
     <partial-export v-model="showExport" :artifacts="artifactsToExport" />
     <alike-locker v-model="showAlike" :index="targetIndex" />
+    <affnum-distr v-model="showAffnumDistr" :art="statsArt" />
+    <defeat-list v-model="showDefeatList" :art="statsArt" />
 </template>
 
 <style lang="scss" scoped>
