@@ -2,7 +2,7 @@
 import { ref, computed, watch } from "vue";
 import { ArtifactData } from "@/ys/data";
 import chs from "@/ys/locale/chs";
-import { useStore } from "@/store";
+import { useArtifactStore } from "@/store";
 import { Affix, Artifact } from "@/ys/artifact";
 import ArtifactCard from "@/components/widgets/ArtifactCard.vue";
 
@@ -12,7 +12,8 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: "update:modelValue", value: boolean): void;
 }>();
-const store = useStore();
+
+const artStore = useArtifactStore();
 
 const show = computed({
     get() {
@@ -33,9 +34,6 @@ const art = ref<Artifact>(
         mainKey: "hp",
     })
 );
-const updartAffnum = () => {
-    art.value.updateAffnum(store.state.weightInUse);
-};
 // 套装
 const sets = Object.entries(chs.set).map(([key, label]) => ({
     value: key,
@@ -76,7 +74,6 @@ const level = computed<number>({
     },
     set(value) {
         art.value.level = value;
-        updartAffnum();
     },
 });
 // 副词条（这里就不检查合法性了，太麻烦）
@@ -87,7 +84,6 @@ const minor1key = computed<string>({
     set(key) {
         if (art.value.minors.length >= 1) art.value.minors[0].key = key;
         else art.value.minors.push(new Affix({ key, value: 0 }));
-        updartAffnum();
     },
 });
 const minor1value = computed<number>({
@@ -97,7 +93,6 @@ const minor1value = computed<number>({
     set(value) {
         if (art.value.minors.length >= 1) art.value.minors[0].value = value;
         else art.value.minors.push(new Affix({ key: "atk", value }));
-        updartAffnum();
     },
 });
 const minor2key = computed<string>({
@@ -107,7 +102,6 @@ const minor2key = computed<string>({
     set(key) {
         if (art.value.minors.length >= 2) art.value.minors[1].key = key;
         else art.value.minors.push(new Affix({ key, value: 0 }));
-        updartAffnum();
     },
 });
 const minor2value = computed<number>({
@@ -117,7 +111,6 @@ const minor2value = computed<number>({
     set(value) {
         if (art.value.minors.length >= 2) art.value.minors[1].value = value;
         else art.value.minors.push(new Affix({ key: "atk", value }));
-        updartAffnum();
     },
 });
 const minor3key = computed<string>({
@@ -127,7 +120,6 @@ const minor3key = computed<string>({
     set(key) {
         if (art.value.minors.length >= 3) art.value.minors[2].key = key;
         else art.value.minors.push(new Affix({ key, value: 0 }));
-        updartAffnum();
     },
 });
 const minor3value = computed<number>({
@@ -137,7 +129,6 @@ const minor3value = computed<number>({
     set(value) {
         if (art.value.minors.length >= 3) art.value.minors[2].value = value;
         else art.value.minors.push(new Affix({ key: "atk", value }));
-        updartAffnum();
     },
 });
 const minor4key = computed<string>({
@@ -154,7 +145,6 @@ const minor4key = computed<string>({
             if (art.value.minors.length >= 4) art.value.minors[3].key = key;
             else art.value.minors.push(new Affix({ key, value: 0 }));
         }
-        updartAffnum();
     },
 });
 const minor4value = computed<number>({
@@ -164,7 +154,6 @@ const minor4value = computed<number>({
     set(value) {
         if (art.value.minors.length >= 4) art.value.minors[3].value = value;
         else art.value.minors.push(new Affix({ key: "atk", value }));
-        updartAffnum();
     },
 });
 // 简单检查圣遗物合法性，如果合法就添加该圣遗物
@@ -180,7 +169,7 @@ const save = () => {
         mainKey: art.value.mainKey,
         minors: art.value.minors.map((m) => new Affix(m)),
     });
-    store.dispatch("addArtifacts", { artifacts: [artifact] });
+    artStore.addArtifacts([artifact]);
     emit("update:modelValue", false);
 };
 </script>

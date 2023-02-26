@@ -6,26 +6,26 @@ import CharSelect from "@/components/widgets/CharSelect.vue";
 import RangeSlider from "@/components/widgets/RangeSlider.vue";
 import chs from "@/ys/locale/chs";
 import { computed, watch } from "vue";
-import { useStore } from "@/store";
+import { useArtifactStore } from "@/store";
 import { Artifact } from "@/ys/artifact";
 import { ArtifactData, CharacterData } from "@/ys/data";
 import filterRules from "@/store/filterRules";
 import { IOption } from "@/store/types";
 
-const store = useStore();
+const artStore = useArtifactStore();
 
 const pro = computed<boolean>({
     get() {
-        return store.state.filter.pro;
+        return artStore.filter.pro;
     },
     set(v) {
-        store.commit("setFilter", { pro: v });
+        artStore.filter.pro = v;
     },
 });
 
 function countArtifactAttr(key: keyof Artifact) {
     let c: { [key: string]: number } = {};
-    for (let a of store.state.artifacts) {
+    for (let a of artStore.artifacts) {
         let akey = a[key].toString();
         c[akey] = akey in c ? c[akey] + 1 : 1;
     }
@@ -43,14 +43,6 @@ const setOptions = computed(() => {
             tip: c[key].toString(),
         }));
 });
-const set = computed<string[]>({
-    get() {
-        return store.state.filter.set;
-    },
-    set(v) {
-        store.commit("setFilter", { set: v });
-    },
-});
 // 部位
 const slotOptions = computed(() => {
     let c = countArtifactAttr("slot");
@@ -63,14 +55,6 @@ const slotOptions = computed(() => {
             tip: c[key].toString(),
         }));
 });
-const slot = computed<string[]>({
-    get() {
-        return store.state.filter.slot;
-    },
-    set(v) {
-        store.commit("setFilter", { slot: v });
-    },
-});
 // 主词条
 const mainOptions = computed(() => {
     let c = countArtifactAttr("mainKey");
@@ -81,14 +65,6 @@ const mainOptions = computed(() => {
             label: chs.affix[key],
             tip: c[key].toString(),
         }));
-});
-const main = computed<string[]>({
-    get() {
-        return store.state.filter.main;
-    },
-    set(v) {
-        store.commit("setFilter", { main: v });
-    },
 });
 // 锁
 const lockOptions = computed(() => {
@@ -101,23 +77,6 @@ const lockOptions = computed(() => {
             tip: c[key].toString(),
         }));
 });
-const lock = computed<string[]>({
-    get() {
-        return store.state.filter.lock;
-    },
-    set(v) {
-        store.commit("setFilter", { lock: v });
-    },
-});
-// 等级
-const lvRange = computed<number[]>({
-    get() {
-        return store.state.filter.lvRange;
-    },
-    set(v) {
-        store.commit("setFilter", { lvRange: v });
-    },
-});
 // 佩戴角色
 const charOptions = computed(() => {
     let c = countArtifactAttr("location");
@@ -129,39 +88,21 @@ const charOptions = computed(() => {
             tip: c[key].toString(),
         }));
 });
-const char = computed<string[]>({
-    get() {
-        return store.state.filter.location;
-    },
-    set(v) {
-        store.commit("setFilter", { location: v });
-    },
-});
 // 特殊筛选规则
 const ruleOptions: IOption[] = filterRules.map((v, i) => ({
     key: i,
     label: v.label,
 }));
-const ruleId = computed<number>({
-    get() {
-        return store.state.filter.ruleId;
-    },
-    set(v) {
-        store.commit("setFilter", { ruleId: v });
-    },
-});
 // 更新，填充
 watch(
-    () => store.state.nResetFilter,
+    () => artStore.nResetFilter,
     () => {
-        store.commit("setFilter", {
-            set: setOptions.value.map((o) => o.key),
-            slot: slotOptions.value.map((o) => o.key),
-            main: mainOptions.value.map((o) => o.key),
-            lock: lockOptions.value.map((o) => o.key),
-            lvRange: [0, 20],
-            location: charOptions.value.map((o) => o.key),
-        });
+        artStore.filter.set = setOptions.value.map((o) => o.key);
+        artStore.filter.slot = slotOptions.value.map((o) => o.key);
+        artStore.filter.main = mainOptions.value.map((o) => o.key);
+        artStore.filter.lock = lockOptions.value.map((o) => o.key);
+        artStore.filter.lvRange = [0, 20];
+        artStore.filter.location = charOptions.value.map((o) => o.key);
     }
 );
 </script>
@@ -177,41 +118,41 @@ watch(
                 class="filter"
                 title="套装"
                 :options="setOptions"
-                v-model="set"
+                v-model="artStore.filter.set"
                 :use-icon="true"
             />
             <multi-select
                 class="filter"
                 title="部位"
                 :options="slotOptions"
-                v-model="slot"
+                v-model="artStore.filter.slot"
                 :use-icon="true"
             />
             <multi-select
                 class="filter"
                 title="主词条"
                 :options="mainOptions"
-                v-model="main"
+                v-model="artStore.filter.main"
             />
             <multi-select
                 class="filter"
                 title="锁"
                 :options="lockOptions"
-                v-model="lock"
+                v-model="artStore.filter.lock"
             />
-            <range-slider class="filter" v-model="lvRange" />
+            <range-slider class="filter" v-model="artStore.filter.lvRange" />
             <div v-show="pro">
                 <char-select
                     class="filter"
                     title="角色"
                     :options="charOptions"
-                    v-model="char"
+                    v-model="artStore.filter.location"
                 />
                 <single-select
                     class="filter"
                     title="特殊筛选规则"
                     :options="ruleOptions"
-                    v-model="ruleId"
+                    v-model="artStore.filter.ruleId"
                 />
             </div>
         </div>

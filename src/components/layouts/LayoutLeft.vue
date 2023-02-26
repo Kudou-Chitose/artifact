@@ -8,7 +8,7 @@ import PartialExport from "@/components/dialogs/PartialExport.vue";
 import AlikeLocker from "@/components/dialogs/AlikeLocker.vue";
 import DefeatList from "@/components/dialogs/DefeatList.vue";
 import Grid from "vue-virtual-scroll-grid";
-import { useStore } from "@/store";
+import { useArtifactStore, useUiStore } from "@/store";
 import { computed, ref, watch } from "vue";
 // import type { ElScrollbar } from "element-plus";
 import {
@@ -20,24 +20,28 @@ import {
 } from "@element-plus/icons-vue";
 import { Artifact } from "@/ys/artifact";
 
-const store = useStore();
+const artStore = useArtifactStore();
+const uiStore = useUiStore();
+
 const stat = computed(() => {
-    let nAll = store.state.filteredArtifacts.length;
+    let nAll = artStore.processedArtifacts.length;
     let nFull = 0,
         nLock = 0;
-    for (let a of store.state.filteredArtifacts) {
+    for (let a of artStore.processedArtifacts) {
         if (a.level == 20) nFull++;
         if (a.lock) nLock++;
     }
     return `共${nAll}个 满级${nFull}个 加锁${nLock}个 解锁${nAll - nLock}个`;
 });
+
 const flipLock = (index: number) => {
-    store.dispatch("flipLock", { index });
+    artStore.flipLock(index);
     if (alikeEnabled.value) {
         targetIndex.value = index;
         showAlike.value = true;
     }
 };
+
 const selectMode = ref(false);
 const selection = ref([] as number[]);
 const selectionSet = computed<Set<number>>(() => {
@@ -70,7 +74,7 @@ const flipSelect = (index: number, shiftKey: boolean) => {
         let s = selectionSet.value,
             state = 0,
             ends = [index, lastSelect.index];
-        for (let a of store.state.filteredArtifacts) {
+        for (let a of artStore.processedArtifacts) {
             let start = false;
             if (state == 0 && ends.includes(a.data.index)) {
                 state = 1;
@@ -92,7 +96,7 @@ const flipSelect = (index: number, shiftKey: boolean) => {
 };
 const selectAll = () => {
     selection.value = [];
-    for (let a of store.state.filteredArtifacts) {
+    for (let a of artStore.processedArtifacts) {
         selection.value.push(a.data.index);
     }
 };
@@ -101,7 +105,7 @@ const deselectAll = () => {
 };
 const invSelection = () => {
     let S: Set<number> = new Set();
-    for (let a of store.state.filteredArtifacts) {
+    for (let a of artStore.processedArtifacts) {
         S.add(a.data.index);
     }
     for (let i of selection.value) {
@@ -110,15 +114,15 @@ const invSelection = () => {
     selection.value = Array.from(S);
 };
 const lockSelection = () => {
-    store.dispatch("setLock", { lock: true, indices: selection.value });
+    artStore.setLocks(selection.value, true);
     selection.value = [];
 };
 const unlockSelection = () => {
-    store.dispatch("setLock", { lock: false, indices: selection.value });
+    artStore.setLocks(selection.value, false);
     selection.value = [];
 };
 const delSelection = () => {
-    store.dispatch("delArtifacts", { indices: selection.value });
+    artStore.delArtifacts(selection.value);
     selection.value = [];
 };
 const cancelSelect = () => {
@@ -128,7 +132,7 @@ const cancelSelect = () => {
     }, 100);
 };
 const selectionStat = computed(() => {
-    return `已选中 ${selection.value.length}/${store.state.filteredArtifacts.length}`;
+    return `已选中 ${selection.value.length}/${artStore.processedArtifacts.length}`;
 });
 // editor
 const showEditor = ref(false);
@@ -144,7 +148,7 @@ const showDefeatList = ref(false);
 const showPBuildList = ref(false);
 const stats = (art: Artifact) => {
     statsArt.value = art;
-    switch (store.state.sortResultType) {
+    switch (artStore.sortResultType) {
         case "affnum":
             showAffnumDistr.value = true;
             break;
@@ -160,33 +164,27 @@ const stats = (art: Artifact) => {
 const showExport = ref(false);
 const artifactsToExport = ref<Artifact[]>([]);
 const exportSelection = () => {
-    artifactsToExport.value = store.state.filteredArtifacts.filter((a) =>
+    artifactsToExport.value = artStore.processedArtifacts.filter((a) =>
         selectionSet.value.has(a.data.index)
     );
     showExport.value = true;
 };
-// scrollbar
-// const scrollbarRef = ref<InstanceType<typeof ElScrollbar>>()
-// watch(() => store.state.nReload, () => {
-//     selection.value = []
-//     scrollbarRef.value!.setScrollTop(0)
-// })
 // 倒序
 const reverseOrder = computed({
     get() {
-        return store.state.artMode.reverseOrder;
+        return artStore.artMode.reverseOrder;
     },
     set(v) {
-        store.commit("setArtMode", { reverseOrder: v });
-        store.dispatch("reload"); // 强制刷新virtual-scroll-grid
+        artStore.artMode.reverseOrder = v;
+        uiStore.run(() => {}); // 强制刷新virtual-scroll-grid
     },
 });
 // 圣遗物列表
 const artifacts = computed(() => {
     if (reverseOrder.value) {
-        return store.state.filteredArtifacts.slice().reverse();
+        return artStore.processedArtifacts.slice().reverse();
     } else {
-        return store.state.filteredArtifacts;
+        return artStore.processedArtifacts;
     }
 });
 // 配置方法见https://vuejsexamples.com/virtual-scroll-grid-for-vue-3/
@@ -197,21 +195,21 @@ const pageProvider = async (pageNumber: number, pageSize: number) => {
     );
 };
 // x0.85
-const useMaxAsUnit = computed({
+const affnumMultiplier = computed({
     get() {
-        return store.state.artMode.useMaxAsUnit;
+        return artStore.artMode.affnumMultiplier;
     },
     set(v) {
-        store.commit("setArtMode", { useMaxAsUnit: v });
+        artStore.artMode.affnumMultiplier = v;
     },
 });
-// 显示词条数
-const showAffnum = computed({
+// 显示无量纲数值
+const dimensionless = computed({
     get() {
-        return store.state.artMode.showAffnum;
+        return artStore.artMode.dimensionless;
     },
     set(v) {
-        store.commit("setArtMode", { showAffnum: v });
+        artStore.artMode.dimensionless = v;
     },
 });
 // 手动添加
@@ -221,10 +219,10 @@ const showGenerator = ref(false);
 // 相似圣遗物
 const alikeEnabled = computed({
     get() {
-        return store.state.artMode.alikeEnabled;
+        return artStore.artMode.alikeEnabled;
     },
     set(v) {
-        store.commit("setArtMode", { alikeEnabled: v });
+        artStore.artMode.alikeEnabled = v;
     },
 });
 const showAlike = ref(false);
@@ -257,17 +255,8 @@ const targetIndex = ref(-1);
                         <span>联想</span>
                     </div>
                     <div
-                        :class="{ btn: true, checked: useMaxAsUnit }"
-                        @click="useMaxAsUnit = !useMaxAsUnit"
-                    >
-                        <el-icon>
-                            <View />
-                        </el-icon>
-                        <span>×0.85</span>
-                    </div>
-                    <div
-                        :class="{ btn: true, checked: showAffnum }"
-                        @click="showAffnum = !showAffnum"
+                        :class="{ btn: true, checked: dimensionless }"
+                        @click="dimensionless = !dimensionless"
                     >
                         <el-icon>
                             <View />
@@ -296,7 +285,7 @@ const targetIndex = ref(-1);
             </div>
             <Grid
                 class="artifact-grid"
-                :key="store.state.nReload"
+                :key="uiStore.nReload"
                 :length="artifacts.length"
                 :page-size="50"
                 :page-provider="pageProvider"

@@ -4,7 +4,7 @@ import { Edit, Histogram } from "@element-plus/icons-vue";
 import { Affix, Artifact } from "@/ys/artifact";
 import chs from "@/ys/locale/chs";
 import { ArtifactData } from "@/ys/data";
-import { useStore } from "@/store";
+import { useArtifactStore } from "@/store";
 import { IAffnumResult, IDefeatResult, IPBuildResult } from "@/ys/sort";
 
 const props = defineProps<{
@@ -20,7 +20,8 @@ const emit = defineEmits<{
     (e: "stats"): void;
 }>();
 
-const store = useStore();
+const artStore = useArtifactStore();
+
 const pieceName = computed(() => {
     if (props.artifact.set in chs.set && props.artifact.slot in chs.slot) {
         let name = chs.set[props.artifact.set];
@@ -68,14 +69,12 @@ const minors = computed(() => {
         let name = affixName(a.key),
             value,
             opacity = 1;
-        if (store.state.artMode.showAffnum) {
+        if (artStore.artMode.dimensionless) {
             if (["atkp", "defp", "hpp"].includes(a.key)) {
                 name += "%";
             }
             value = a.value / ArtifactData.minorStat[a.key];
-            if (!store.state.artMode.useMaxAsUnit) {
-                value /= 0.85;
-            }
+            value *= artStore.artMode.affnumMultiplier;
             value = value.toFixed(1);
         } else {
             value = a.valueString();
@@ -84,8 +83,8 @@ const minors = computed(() => {
         if (["atk", "hp", "def"].includes(a.key)) {
             opacity = 0.5;
         } else if (
-            ["avg", "psingle"].includes(store.state.sort.by) &&
-            !store.state.sort.weight[a.key]
+            ["avg", "psingle"].includes(artStore.sort.by) &&
+            !artStore.sort.weight[a.key as "hpp"]
         ) {
             opacity = 0.5;
         }
@@ -128,12 +127,9 @@ const flipLock = () => {
 
 // display sort results according to current sort type
 const sortResultDisplayType = computed(() => {
-    if (
-        !store.state.sortResults ||
-        !store.state.sortResults.has(props.artifact)
-    )
+    if (!artStore.sortResults || !artStore.sortResults.has(props.artifact))
         return "";
-    switch (store.state.sortResultType) {
+    switch (artStore.sortResultType) {
         case "affnum":
             return props.artifact.level < 20 ? "affnum-mam" : "affnum-c";
         case "pbuild":
@@ -145,19 +141,17 @@ const sortResultDisplayType = computed(() => {
     }
 });
 const affnumResult = computed(
-    () => store.state.sortResults!.get(props.artifact) as IAffnumResult
+    () => artStore.sortResults!.get(props.artifact) as IAffnumResult
 );
 const formatAffnum = (n: number) => {
-    if (!store.state.artMode.useMaxAsUnit) {
-        n /= 0.85;
-    }
+    n *= artStore.artMode.affnumMultiplier;
     return n.toFixed(1);
 };
 const pBuildResultStr = computed(() => {
-    let result = store.state.sortResults!.get(props.artifact) as IPBuildResult;
+    let result = artStore.sortResults!.get(props.artifact) as IPBuildResult;
     let probs: [string, number][] = [];
     for (let buildKey in result.buildProb) {
-        let b = store.state.builds.filter((b) => b.key == buildKey)[0];
+        let b = artStore.builds.filter((b) => b.key == buildKey)[0];
         probs.push([b ? b.name : "", result.buildProb[buildKey]]);
     }
     // sort in descending order
@@ -169,7 +163,7 @@ const pBuildResultStr = computed(() => {
     );
 });
 const defeatResultStr = computed(() => {
-    let result = store.state.sortResults!.get(props.artifact) as IDefeatResult;
+    let result = artStore.sortResults!.get(props.artifact) as IDefeatResult;
     return result.defeat;
 });
 </script>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useStore } from "@/store";
+import { useArtifactStore } from "@/store";
 import { computed, ref, watch } from "vue";
 import { Artifact } from "@/ys/artifact";
 import { IDefeatResult } from "@/ys/sort";
@@ -21,7 +21,7 @@ const show = computed<boolean>({
     },
 });
 
-const store = useStore();
+const artStore = useArtifactStore();
 
 // 列表
 const defeatByList = ref<Artifact[]>([]);
@@ -41,9 +41,9 @@ const loadDefeatByListDisabled = computed(
 const updDefeatByList = () => {
     /* update defeatByList according sort results */
     if (!props.art) return false;
-    if (!store.state.sortResults) return false;
-    if (store.state.sortResultType != "defeat") return false;
-    const result = store.state.sortResults.get(props.art) as IDefeatResult;
+    if (!artStore.sortResults) return false;
+    if (artStore.sortResultType != "defeat") return false;
+    const result = artStore.sortResults.get(props.art) as IDefeatResult;
     if (!result) return false;
     defeatByList.value = result.by;
     defeatByListShowCount.value = Math.min(result.by.length, 10);

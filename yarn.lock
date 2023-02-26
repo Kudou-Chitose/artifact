@@ -367,16 +367,6 @@
     "@vue/compiler-dom" "3.2.29"
     "@vue/shared" "3.2.29"
 
-"@vue/devtools-api@^6.0.0-beta.11":
-  version "6.0.0-beta.21.1"
-  resolved "https://registry.npmmirror.com/@vue/devtools-api/download/@vue/devtools-api-6.0.0-beta.21.1.tgz"
-  integrity sha512-FqC4s3pm35qGVeXRGOjTsRzlkJjrBLriDS9YXbflHLsfA9FrcKzIyWnLXoNm+/7930E8rRakXuAc2QkC50swAw==
-
-"@vue/devtools-api@^6.0.0-beta.18":
-  version "6.0.8"
-  resolved "https://registry.npmmirror.com/@vue/devtools-api/-/devtools-api-6.0.8.tgz"
-  integrity sha512-bzei608bPVQE2yq9Ghrjn/dnpf27mWfrr0q0ZQiuZoO3LQqFG0T1xSGz+9vw1j9KAZM2Cu9vdQMkddDxqzZGNg==
-
 "@vue/devtools-api@^6.0.0-beta.7":
   version "6.2.0"
   resolved "https://registry.npmjs.org/@vue/devtools-api/-/devtools-api-6.2.0.tgz"
@@ -1579,13 +1569,6 @@ vue-i18n@^9.1.10:
     "@intlify/vue-devtools" "9.1.10"
     "@vue/devtools-api" "^6.0.0-beta.7"
 
-vue-router@4:
-  version "4.0.12"
-  resolved "https://registry.npmmirror.com/vue-router/-/vue-router-4.0.12.tgz"
-  integrity sha512-CPXvfqe+mZLB1kBWssssTiWg4EQERyqJZes7USiqfW9B5N2x+nHlnsM1D3b5CaJ6qgCvMmYJnz+G0iWjNCvXrg==
-  dependencies:
-    "@vue/devtools-api" "^6.0.0-beta.18"
-
 vue-tsc@^0.29.8:
   version "0.29.8"
   resolved "https://registry.npmjs.org/vue-tsc/-/vue-tsc-0.29.8.tgz"
@@ -1613,13 +1596,6 @@ vue@^3.2.25:
     "@vue/runtime-dom" "3.2.29"
     "@vue/server-renderer" "3.2.29"
     "@vue/shared" "3.2.29"
-
-vuex@4:
-  version "4.0.2"
-  resolved "https://registry.npmmirror.com/vuex/download/vuex-4.0.2.tgz"
-  integrity sha512-M6r8uxELjZIK8kTKDGgZTYX/ahzblnzC4isU1tpmEuOIIKmV+TRdc+H4s8ds2NuZ7wpUTdGRzJRtoj+lI+pc0Q==
-  dependencies:
-    "@vue/devtools-api" "^6.0.0-beta.11"
 
 webpack-virtual-modules@^0.4.3:
   version "0.4.3"

@@ -2,8 +2,9 @@
 import { ref, computed, watch } from "vue";
 import { ArtifactData } from "@/ys/data";
 import chs from "@/ys/locale/chs";
-import { useStore } from "@/store";
+import { useArtifactStore } from "@/store";
 import { Artifact } from "@/ys/artifact";
+import store from "@/ys/p2p/store";
 
 const props = defineProps<{
     modelValue: boolean;
@@ -11,7 +12,8 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: "update:modelValue", value: boolean): void;
 }>();
-const store = useStore();
+
+const artStore = useArtifactStore();
 
 const show = computed({
     get() {
@@ -77,7 +79,7 @@ const save = () => {
             })
         );
     }
-    store.dispatch("addArtifacts", { artifacts });
+    artStore.addArtifacts(artifacts);
     emit("update:modelValue", false);
 };
 </script>

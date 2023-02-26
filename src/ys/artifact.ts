@@ -1,12 +1,7 @@
 import { assert, choice } from "./utils";
 import { ArtifactData } from "./data";
 
-interface IAffix {
-    key: string;
-    value: number;
-}
-
-export class Affix implements IAffix {
+export class Affix {
     key = "";
     value = 0;
     constructor(obj?: any) {
@@ -24,23 +19,7 @@ export class Affix implements IAffix {
     }
 }
 
-interface IArtifact {
-    set: string;
-    slot: string;
-    rarity: number;
-    level: number;
-    lock: boolean;
-    location: string;
-    mainKey: string;
-    minors: Affix[];
-    data: {
-        index: number; // 圣遗物唯一标识，如果是导入的圣遗物就是导入数据中的序号，否则一般是Math.random()生成的随机数取相反数（因为想和导入的圣遗物在“不排序”时区分开）
-        source: string; // 圣遗物数据来源，例如"good"，内部生成的source为''
-        lock: boolean; // 导入数据中圣遗物的原本加解锁信息，用来识别在本工具中做过的修改
-    };
-}
-
-export class Artifact implements IArtifact {
+export class Artifact {
     set = "";
     slot = "";
     rarity = 5;
@@ -50,9 +29,9 @@ export class Artifact implements IArtifact {
     mainKey = "";
     minors: Affix[] = [];
     data = {
-        index: -Math.random(),
-        source: "",
-        lock: false,
+        index: -Math.random(), // 圣遗物唯一标识，如果是导入的圣遗物就是导入数据中的序号，否则一般是Math.random()生成的随机数取相反数（因为想和导入的圣遗物在“不排序”时区分开）
+        source: "", // 圣遗物数据来源，例如"good"，内部生成的source为''
+        lock: false, // 导入数据中圣遗物的原本加解锁信息，用来识别在本工具中做过的修改
     };
     constructor(o?: any) {
         if (!o || typeof o != "object") return;

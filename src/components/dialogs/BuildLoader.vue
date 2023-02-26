@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
-import { useStore } from "@/store";
+import { useArtifactStore } from "@/store";
 import chs from "@/ys/locale/chs";
 import { CharacterData } from "@/ys/data";
 
-const store = useStore();
+const artStore = useArtifactStore();
 
 interface IOption {
     value: string | number;
@@ -29,7 +29,7 @@ const element = ref("");
 const character = ref("");
 const characters = computed<IOption[]>(() => {
     let ret = [];
-    for (let b of store.state.builds) {
+    for (let b of artStore.builds) {
         if (
             (b.key.startsWith("0") && element.value == "custom") ||
             (b.key in CharacterData &&
@@ -50,7 +50,14 @@ const valid = computed(() => {
     return !!character.value;
 });
 const apply = () => {
-    store.commit("useBuild", { buildKey: character.value });
+    let b = artStore.builds.find((b) => b.key == character.value);
+    if (b) {
+        artStore.sort.set = [...b.set];
+        artStore.sort.sands = [...b.main.sands];
+        artStore.sort.goblet = [...b.main.goblet];
+        artStore.sort.circlet = [...b.main.circlet];
+        artStore.sort.weight = { ...b.weight } as any;
+    }
     emit("update:modelValue", false);
 };
 </script>

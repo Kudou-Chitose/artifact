@@ -4,7 +4,7 @@ import { useArtifactStore } from "./artifactStore";
 import { useUiStore } from "./uiStore";
 import { GoodFormat } from "@/ys/ext";
 import { i18n } from "@/i18n";
-import { assign } from "@/utils";
+import { assign } from "../utils";
 
 class YasConfig {
     max_row = 1000;
@@ -40,23 +40,27 @@ class YasConfig {
     }
 }
 
-const artifactStore = useArtifactStore();
-const uiStore = useUiStore();
-
 export const useYasStore = defineStore("yas", () => {
+    const artStore = useArtifactStore();
+    const uiStore = useUiStore();
+
     const version = ref("");
-    const connected = ref(false);
     const config = reactive(new YasConfig());
+    const connected = ref(false);
+    const socketUrl = ref("");
 
     let socket: WebSocket | undefined = undefined;
 
-    /** set socket by url, or clear socket if url is undefined */
-    function setSocket(url?: string) {
+    /** set socket by url, or clear socket if url is null */
+    function setSocket(url: string | null) {
         if (!url) {
             socket = undefined;
             connected.value = false;
+            socketUrl.value = "";
             return;
         }
+
+        socketUrl.value = url;
 
         // create socket and bind events
         socket = new WebSocket(url);
@@ -75,7 +79,7 @@ export const useYasStore = defineStore("yas", () => {
                                 i18n.global.t("yas.scan.success"),
                                 "success"
                             );
-                            artifactStore.setArtifacts(
+                            artStore.setArtifacts(
                                 GoodFormat.loads(pkt.data.good_json),
                                 true
                             );
@@ -159,6 +163,7 @@ export const useYasStore = defineStore("yas", () => {
         version,
         connected,
         config,
+        socketUrl,
         setSocket,
         sendScanReq,
         sendLockReq,

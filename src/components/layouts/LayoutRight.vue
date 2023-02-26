@@ -3,11 +3,9 @@ import ImportSection from "@/components/sections/ImportSection.vue";
 import FilterSection from "@/components/sections/FilterSection.vue";
 import SortSection from "@/components/sections/SortSection.vue";
 import TextButton from "@/components/widgets/TextButton.vue";
-import { useStore } from "@/store";
-const store = useStore();
-const start = () => {
-    store.dispatch("updFilteredArtifacts");
-};
+import { useArtifactStore } from "@/store";
+
+const artStore = useArtifactStore();
 </script>
 
 <template>
@@ -17,7 +15,9 @@ const start = () => {
             <filter-section />
             <sort-section />
             <div class="start-container">
-                <text-button @click="start">开始计算</text-button>
+                <text-button @click="artStore.filterAndSort()"
+                    >开始计算</text-button
+                >
             </div>
         </el-scrollbar>
     </div>

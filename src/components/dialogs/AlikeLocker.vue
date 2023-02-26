@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue";
 import { Artifact } from "@/ys/artifact";
-import { useStore } from "@/store";
+import { useArtifactStore } from "@/store";
 import ArtifactCard from "@/components/widgets/ArtifactCard.vue";
 import { retry } from "rxjs";
 
-const store = useStore();
 const props = defineProps<{
     modelValue: boolean;
     index: number;
@@ -13,6 +12,8 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: "update:modelValue", value: boolean): void;
 }>();
+
+const artStore = useArtifactStore();
 
 const show = computed<boolean>({
     get() {
@@ -48,7 +49,7 @@ let ignored = new Set(["hp", "atk", "def"]);
 const updArtLike = () => {
     /* 获取目标圣遗物 */
     let target: Artifact | undefined = undefined;
-    for (let a of store.state.artifacts) {
+    for (let a of artStore.artifacts) {
         if (a.data.index == props.index) {
             target = a;
             break;
@@ -61,7 +62,7 @@ const updArtLike = () => {
     );
     /* 更新artAlike */
     artAlike.value = [];
-    for (let a of store.state.artifacts) {
+    for (let a of artStore.artifacts) {
         if (a.data.index == props.index) continue;
         /* 部位、主词条不同或锁状态一样，不相似 */
         if (
@@ -110,10 +111,10 @@ const msg = computed(
 );
 const btnText = computed(() => (targetLock.value ? "全部加锁" : "全部解锁"));
 const click = () => {
-    store.dispatch("setLock", {
-        lock: targetLock.value,
-        indices: artAlike.value.map((a) => a.data.index),
-    });
+    artStore.setLocks(
+        artAlike.value.map((a) => a.data.index),
+        targetLock.value
+    );
     emit("update:modelValue", false);
 };
 </script>

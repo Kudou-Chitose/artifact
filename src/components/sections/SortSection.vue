@@ -8,10 +8,11 @@ import BuildLoader from "@/components/dialogs/BuildLoader.vue";
 import BuildEditor from "@/components/dialogs/BuildEditor.vue";
 import ValueButton from "@/components/widgets/ValueButton.vue";
 import { computed, ref } from "vue";
-import { useStore } from "@/store";
+import { useArtifactStore } from "@/store";
 import chs from "@/ys/locale/chs";
 import { ArtifactData } from "@/ys/data";
-const store = useStore();
+
+const artStore = useArtifactStore();
 
 // 排序方式
 const sortByOptions = [
@@ -22,37 +23,14 @@ const sortByOptions = [
     { key: "defeat", label: "按上位替代数" },
     { key: "index", label: "不排序" },
 ];
-const sortBy = computed<string>({
-    get() {
-        return store.state.sort.by;
-    },
-    set(v) {
-        store.commit("setSort", { key: "by", value: v });
-    },
-});
 
 // 按满级期望词条数
-const setWeight = (key: string, value: number) => {
-    let w = store.state.sort.weight;
-    if (key in w) {
-        w[key] = value;
-        store.commit("setSort", { key: "weight", value: w });
-    }
-};
 const showPresetLoader = ref(false);
 const openPresetLoader = () => (showPresetLoader.value = true);
 
 // 按角色适配概率（多人）
 const charOptions = computed(() => {
-    return store.state.builds.map((b) => ({ key: b.key, name: b.name }));
-});
-const char = computed<string[]>({
-    get() {
-        return store.state.sort.buildKeys;
-    },
-    set(v) {
-        store.commit("setSort", { key: "buildKeys", value: v });
-    },
+    return artStore.builds.map((b) => ({ key: b.key, name: b.name }));
 });
 // 按角色适配概率（单人）
 const setsOptions = Object.entries(chs.set).map(([key, label]) => ({
@@ -60,50 +38,18 @@ const setsOptions = Object.entries(chs.set).map(([key, label]) => ({
     label,
     icon: `./assets/artifacts/${key}/flower.webp`,
 }));
-const sets = computed<string[]>({
-    get() {
-        return store.state.sort.sets;
-    },
-    set(v) {
-        store.commit("setSort", { key: "sets", value: v });
-    },
-});
 const sandsOptions = ArtifactData.mainKeys.sands.map((m) => ({
     key: m,
     label: chs.affix[m],
 }));
-const sands = computed<string[]>({
-    get() {
-        return store.state.sort.sands;
-    },
-    set(v) {
-        store.commit("setSort", { key: "sands", value: v });
-    },
-});
 const gobletOptions = ArtifactData.mainKeys.goblet.map((m) => ({
     key: m,
     label: chs.affix[m],
 }));
-const goblet = computed<string[]>({
-    get() {
-        return store.state.sort.goblet;
-    },
-    set(v) {
-        store.commit("setSort", { key: "goblet", value: v });
-    },
-});
 const circletOptions = ArtifactData.mainKeys.circlet.map((m) => ({
     key: m,
     label: chs.affix[m],
 }));
-const circlet = computed<string[]>({
-    get() {
-        return store.state.sort.circlet;
-    },
-    set(v) {
-        store.commit("setSort", { key: "circlet", value: v });
-    },
-});
 // 按上位替代数
 // 不排序
 // *词条数
@@ -122,11 +68,11 @@ const openBuildEditor = () => (showBuildEditor.value = true);
         <div class="content">
             <single-select
                 class="row"
-                v-model="sortBy"
+                v-model="artStore.sort.by"
                 :options="sortByOptions"
                 title="排序方式"
             />
-            <div v-if="sortBy == 'avg'">
+            <div v-if="artStore.sort.by == 'avg'">
                 <p class="row small">
                     圣遗物的“词条数”是各个副词条数值除以单次平均提升量，再根据词条权重（折算系数）计算的加权和。
                 </p>
@@ -142,14 +88,13 @@ const openBuildEditor = () => (showBuildEditor.value = true);
                 </p>
                 <value-button
                     class="weight-button"
-                    v-for="(_, key) in store.state.sort.weight"
-                    :model-value="store.state.sort.weight[key]"
-                    @update:model-value="setWeight(key as string, $event)"
+                    v-for="(_, key) in artStore.sort.weight"
+                    v-model="artStore.sort.weight[key]"
                 >
                     {{ (chs.affix as any)[key] }}
                 </value-button>
             </div>
-            <div v-else-if="sortBy == 'avgpro'">
+            <div v-else-if="artStore.sort.by == 'avgpro'">
                 <p class="row small">
                     圣遗物的“词条数”是 套装词条数 与 副词条词条数 的和。
                     套装词条数 是指套装效果折算的词条数加成。 副词条词条数
@@ -162,7 +107,7 @@ const openBuildEditor = () => (showBuildEditor.value = true);
                     <span class="text-btn">修改配置</span>
                 </p>
             </div>
-            <div v-else-if="sortBy == 'pmulti'">
+            <div v-else-if="artStore.sort.by == 'pmulti'">
                 <p class="row small">
                     圣遗物a对角色c的适配概率定义为，刷100个满级圣遗物，其中和a同部位同主词条的圣遗物得分均不超过a的满级期望得分的概率。如果a对c是散件则是200个。
                 </p>
@@ -184,10 +129,10 @@ const openBuildEditor = () => (showBuildEditor.value = true);
                     class="row"
                     title="角色"
                     :options="charOptions"
-                    v-model="char"
+                    v-model="artStore.sort.buildKeys"
                 />
             </div>
-            <div v-else-if="sortBy == 'psingle'">
+            <div v-else-if="artStore.sort.by == 'psingle'">
                 <p class="row small">
                     圣遗物a对角色c的适配概率定义为，刷100个满级圣遗物，其中和a同部位同主词条的圣遗物得分均不超过a的满级期望得分的概率。如果a对c是散件则是200个。
                 </p>
@@ -209,39 +154,38 @@ const openBuildEditor = () => (showBuildEditor.value = true);
                 </p>
                 <value-button
                     class="weight-button"
-                    v-for="(_, key) in store.state.sort.weight"
-                    :model-value="store.state.sort.weight[key]"
-                    @update:model-value="setWeight(key as string, $event)"
+                    v-for="(_, key) in artStore.sort.weight"
+                    v-model="artStore.sort.weight[key]"
                 >
                     {{ (chs.affix as any)[key] }}
                 </value-button>
                 <multi-select
                     class="row"
-                    v-model="sets"
+                    v-model="artStore.sort.set"
                     :options="setsOptions"
                     title="套装偏好"
                     :use-icon="true"
                 />
                 <multi-select
                     class="row"
-                    v-model="sands"
+                    v-model="artStore.sort.sands"
                     :options="sandsOptions"
                     title="时之沙主词条偏好"
                 />
                 <multi-select
                     class="row"
-                    v-model="goblet"
+                    v-model="artStore.sort.goblet"
                     :options="gobletOptions"
                     title="空之杯主词条偏好"
                 />
                 <multi-select
                     class="row"
-                    v-model="circlet"
+                    v-model="artStore.sort.circlet"
                     :options="circletOptions"
                     title="理之冠主词条偏好"
                 />
             </div>
-            <div v-else-if="sortBy == 'defeat'">
+            <div v-else-if="artStore.sort.by == 'defeat'">
                 <p class="row small">
                     圣遗物b是圣遗物a的上位替代，如果它们部位和主词条相同，且a的所有副词条（除小攻/小生/小防外）b都有而且数值更大。
                 </p>

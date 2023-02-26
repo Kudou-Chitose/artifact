@@ -3,10 +3,12 @@ import { graphic } from "echarts";
 import { Artifact } from "@/ys/artifact";
 import { getAffnumCDF, getIncrePDF } from "@/ys/gacha/artifact";
 import { computed, nextTick, ref, watch } from "vue";
-import { useStore } from "@/store";
+import { useArtifactStore } from "@/store";
 import { moment, toCDF, toPDF, zeros } from "@/ys/gacha/utils";
 import { ArtifactData } from "@/ys/data";
 import { IAffnumResult } from "@/ys/sort";
+import store from "@/ys/p2p/store";
+import { retry } from "rxjs";
 
 const props = defineProps<{
     modelValue: boolean;
@@ -24,12 +26,13 @@ const show = computed({
         emit("update:modelValue", value);
     },
 });
-const store = useStore();
 
-const toAffnum = (n: number) =>
-    store.state.artMode.useMaxAsUnit
-        ? (n / 10).toFixed(1)
-        : (n / 8.5).toFixed(1);
+const artStore = useArtifactStore();
+
+const toAffnum = (n: number) => {
+    n = (n / 10) * artStore.artMode.affnumMultiplier;
+    return n.toFixed(1);
+};
 const toProb = (p: number) => (p * 100).toFixed(1) + "%";
 
 let pdfs = ref<
@@ -208,9 +211,9 @@ const option2 = ref({
 
 const updPlots = () => {
     if (!props.art) return false;
-    if (!store.state.sortResults || store.state.sortResultType != "affnum")
+    if (!artStore.sortResults || artStore.sortResultType != "affnum")
         return false;
-    let result = store.state.sortResults.get(props.art) as IAffnumResult;
+    let result = artStore.sortResults.get(props.art) as IAffnumResult;
     if (!result) return false;
     // calc PDFs
     pdfs.value = [];

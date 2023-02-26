@@ -2,16 +2,18 @@
 import { computed, ref, watch } from "vue";
 import { Artifact } from "@/ys/artifact";
 import { download } from "@/store/utils";
-import { useStore } from "@/store";
+import { useArtifactStore, useYasStore } from "@/store";
 import ArtifactCard from "@/components/widgets/ArtifactCard.vue";
 
-const store = useStore();
 const props = defineProps<{
     modelValue: boolean;
 }>();
 const emit = defineEmits<{
     (e: "update:modelValue", value: boolean): void;
 }>();
+
+const artStore = useArtifactStore();
+const yasStore = useYasStore();
 
 const show = computed<boolean>({
     get() {
@@ -59,7 +61,7 @@ watch(
         if (!value) return;
         artToLock.value = [];
         artToUnlock.value = [];
-        for (let a of store.state.artifacts) {
+        for (let a of artStore.artifacts) {
             if (!exportable(a)) continue;
             if (a.lock && !a.data.lock) artToLock.value.push(a);
             if (!a.lock && a.data.lock) artToUnlock.value.push(a);
@@ -79,7 +81,7 @@ const exportArts = () => {
 
     let flip_indices = [];
     let validation = [];
-    for (let a of store.state.artifacts) {
+    for (let a of artStore.artifacts) {
         if (!exportable(a)) continue;
         validation.push({
             index: a.data.index,
@@ -88,7 +90,7 @@ const exportArts = () => {
         if (a.lock != a.data.lock) {
             flip_indices.push(a.data.index);
             // 记住更改
-            if (remember.value || store.state.ws.connected) {
+            if (remember.value || yasStore.connected) {
                 a.data.lock = a.lock;
             }
         }
@@ -105,16 +107,16 @@ const exportArts = () => {
             unlock_indices: [],
             validation,
         };
-        if (store.state.ws.connected) {
-            store.dispatch("sendLockReq", {
+        if (yasStore.connected) {
+            yasStore.sendLockReq({
                 lock_json: JSON.stringify(dataV2),
             });
         } else {
             download(JSON.stringify(dataV2), "lock.json");
         }
     } else {
-        if (store.state.ws.connected) {
-            store.dispatch("sendLockReq", {
+        if (yasStore.connected) {
+            yasStore.sendLockReq({
                 indices: flip_indices,
             });
         } else {
@@ -170,7 +172,7 @@ const exportArts = () => {
                 :readonly="true"
             />
         </div>
-        <div style="margin-top: 10px" v-show="!store.state.ws.connected">
+        <div style="margin-top: 10px" v-show="!yasStore.connected">
             <el-checkbox v-model="remember"
                 >记住本次更改，下次导出时将不再包含以上圣遗物</el-checkbox
             ><br />

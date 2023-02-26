@@ -7,12 +7,14 @@ import { computed, nextTick, ref } from "vue";
 import mona from "@/ys/ext/mona";
 import good from "@/ys/ext/good";
 import genmo from "@/ys/ext/genmo";
-import { useStore } from "@/store";
+import { useArtifactStore, useYasStore } from "@/store";
 import { Artifact } from "@/ys/artifact";
 // import pparser from "@/ys/p2p/pparser";
 import { testArts } from "@/store/test";
 
-const store = useStore();
+const artStore = useArtifactStore();
+const yasStore = useYasStore();
+
 const msg = ref("");
 const ok = ref(false);
 const importMsgClass = computed(() => ({
@@ -20,9 +22,9 @@ const importMsgClass = computed(() => ({
     ok: ok.value,
 }));
 const importArts = () => {
-    if (store.state.ws.connected) {
-        store.dispatch('sendScanReq')
-        return
+    if (yasStore.connected) {
+        yasStore.sendScanReq();
+        return;
     }
     let finput = document.getElementById("file-input") as HTMLInputElement;
     finput.value = "";
@@ -83,7 +85,7 @@ const importArts = () => {
                 }
                 msg.value = `成功导入${artifacts.length}个5星圣遗物`;
                 ok.value = true;
-                store.dispatch("setArtifacts", { artifacts, canExport });
+                artStore.setArtifacts(artifacts, canExport);
             };
             reader.readAsText(file, "UTF-8");
         }
@@ -101,30 +103,37 @@ const openTutorial = () => {
 // 预览对话框
 const showPreview = ref(false);
 // 预览Yas配置器
-const showYasConfig = ref(false)
+const showYasConfig = ref(false);
 // 测试
 nextTick(() => {
-    store.dispatch("setArtifacts", {
-        canExport: false,
-        artifacts: testArts,
-    });
+    artStore.setArtifacts(testArts, false);
 });
 </script>
 
 <template>
     <div class="section">
         <section-title title="导入">
-            <span @click="showYasConfig = true" v-if="store.state.ws.connected">Yas-lock配置</span>
+            <span @click="showYasConfig = true" v-if="yasStore.connected"
+                >Yas-lock配置</span
+            >
             <span @click="openTutorial">教程</span>
         </section-title>
         <div class="section-content">
-            <template v-if="store.state.ws.connected">
+            <template v-if="yasStore.connected">
                 <text-button @click="importArts">扫描</text-button>
-                <text-button style="margin-left: 20px" @click="showPreview = true">落锁</text-button>
+                <text-button
+                    style="margin-left: 20px"
+                    @click="showPreview = true"
+                    >落锁</text-button
+                >
             </template>
             <template v-else>
                 <text-button @click="importArts">导入</text-button>
-                <text-button style="margin-left: 20px" @click="showPreview = true" :disabled="!store.state.canExport">导出
+                <text-button
+                    style="margin-left: 20px"
+                    @click="showPreview = true"
+                    :disabled="!artStore.canExport"
+                    >导出
                 </text-button>
             </template>
             <p :class="importMsgClass">{{ msg }}</p>

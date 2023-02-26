@@ -3,7 +3,7 @@ import { ref, computed, watch, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { ArtifactData, CharacterData } from "@/ys/data";
 import chs from "@/ys/locale/chs";
-import { useStore } from "@/store";
+import { useArtifactStore } from "@/store";
 
 const props = defineProps<{
     modelValue: boolean;
@@ -11,7 +11,8 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: "update:modelValue", v: boolean): void;
 }>();
-const store = useStore();
+
+const artStore = useArtifactStore();
 
 const show = computed<boolean>({
     get() {
@@ -45,7 +46,7 @@ interface IAvatar {
 }
 const avatars = computed(() => {
     let ret: { [e: string]: IAvatar[] } = {};
-    for (let b of store.state.builds) {
+    for (let b of artStore.builds) {
         let element, icon, rarity;
         if (b.key.startsWith("0")) {
             element = "custom";
@@ -114,7 +115,7 @@ const build = reactive({
 const selectBuild = (key?: string) => {
     if (!key) key = "Diluc";
     selectedBuildKey.value = key;
-    let b = store.state.builds.filter((b) => b.key == key)[0];
+    let b = artStore.builds.filter((b) => b.key == key)[0];
     if (b) {
         isNew.value = false;
         build.name = b.name;
@@ -131,7 +132,7 @@ const selectBuild = (key?: string) => {
         build.goblet = [];
         build.circlet = [];
         build.weightJson =
-            '{"hp":0,"atk":0,"def":0,"hpp":0,"atkp":0,"defp":0,"em":0,"er":0,"cr":0,"cd":0}';
+            '{"hpp":0,"atkp":0,"defp":0,"em":0,"er":0,"cr":0,"cd":0}';
     }
 };
 selectBuild();
@@ -171,7 +172,7 @@ const saveBuild = (formEl: any) => {
     if (!formEl) return;
     formEl.validate((valid: boolean) => {
         if (valid && selectedBuildKey.value) {
-            let builds = store.state.builds,
+            let builds = artStore.builds,
                 idx = -1;
             builds.forEach((b, i) => {
                 if (b.key == selectedBuildKey.value) idx = i;
@@ -197,7 +198,6 @@ const saveBuild = (formEl: any) => {
                     weight: JSON.parse(build.weightJson),
                 });
             }
-            store.commit("setBuilds", { builds });
             ElMessage({ message: "保存成功", type: "success" });
         }
     });
@@ -206,7 +206,7 @@ const addBuild = () => {
     selectBuild(Math.random().toString());
 };
 const _resetBuild = (key: string) => {
-    let b = store.state.builds.filter((b) => b.key == key)[0];
+    let b = artStore.builds.filter((b) => b.key == key)[0];
     if (!b) return;
     let c = CharacterData[key];
     if (!c) return;
@@ -221,7 +221,7 @@ const resetBuild = () => {
     if (selectedBuildKey.value) {
         _resetBuild(selectedBuildKey.value);
         selectBuild(selectedBuildKey.value);
-        store.commit("setBuilds", { builds: store.state.builds });
+        artStore.builds = artStore.builds;
         ElMessage({ message: "重置成功", type: "success" });
     }
 };
@@ -236,7 +236,6 @@ const resetAllBuilds = () => {
         }
     ).then(() => {
         Object.keys(CharacterData).forEach((key) => _resetBuild(key));
-        store.commit("setBuilds", { builds: store.state.builds });
         ElMessage({ message: "重置成功", type: "success" });
     });
 };
@@ -250,11 +249,9 @@ const delCustomBuild = () => {
             type: "warning",
         }
     ).then(() => {
-        store.commit("setBuilds", {
-            builds: store.state.builds.filter(
-                (b) => b.key != selectedBuildKey.value
-            ),
-        });
+        artStore.builds = artStore.builds.filter(
+            (b) => b.key != selectedBuildKey.value
+        );
         ElMessage({ message: "删除成功", type: "success" });
         selectBuild();
     });
@@ -265,9 +262,7 @@ const delCustomBuilds = () => {
         cancelButtonText: "取消",
         type: "warning",
     }).then(() => {
-        store.commit("setBuilds", {
-            builds: store.state.builds.filter((b) => !b.key.startsWith("0")),
-        });
+        artStore.builds = artStore.builds.filter((b) => !b.key.startsWith("0"));
         ElMessage({ message: "删除成功", type: "success" });
         if (selectedBuildKey.value.startsWith("0")) {
             selectBuild();

@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
-import { useStore } from "@/store";
+import { useArtifactStore } from "@/store";
 import chs from "@/ys/locale/chs";
 import { PresetData, CharacterData } from "@/ys/data";
+import store from "@/ys/p2p/store";
 
-const store = useStore();
+const artStore = useArtifactStore();
 
 interface IOption {
     value: string | number;
@@ -63,7 +64,10 @@ const changeCharacter = () => {
     preset.value = "";
 };
 const apply = () => {
-    store.commit("usePreset", { presetKey: preset.value });
+    let w = PresetData[preset.value];
+    if (w) {
+        artStore.sort.weight = { ...w } as any;
+    }
     emit("update:modelValue", false);
 };
 </script>

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed, watch } from "vue";
 import chs from "@/ys/locale/chs";
-import { useStore } from "@/store";
+import { useArtifactStore } from "@/store";
 import { Affix, Artifact } from "@/ys/artifact";
 import ArtifactCard from "@/components/widgets/ArtifactCard.vue";
 import { ArtifactData, CharacterData } from "@/ys/data";
@@ -13,7 +13,8 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: "update:modelValue", value: boolean): void;
 }>();
-const store = useStore();
+
+const artStore = useArtifactStore();
 
 const show = computed({
     get() {
@@ -71,7 +72,7 @@ watch(
                 circlet: false,
             };
         }
-        for (let a of store.state.artifacts) {
+        for (let a of artStore.artifacts) {
             if (a.data.index === props.index) {
                 newArt.value = new Artifact(a);
                 oldArt.value = a;
@@ -212,7 +213,7 @@ const minor4value = computed<number>({
 const toSwap = computed(() => {
     return (
         oldArt.value.location != newArt.value.location &&
-        newArt.value.location &&
+        !!newArt.value.location &&
         equiped[newArt.value.location][newArt.value.slot]
     );
 });
@@ -229,11 +230,7 @@ const equipMsg = computed<string>(() => {
     }
 });
 const save = () => {
-    store.dispatch("updArtifact", {
-        index: props.index,
-        newArt: newArt.value,
-        toSwap: toSwap.value,
-    });
+    artStore.updArtifact(props.index, toSwap.value, newArt.value);
     emit("update:modelValue", false);
 };
 </script>
