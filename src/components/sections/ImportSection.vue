@@ -3,7 +3,7 @@ import SectionTitle from "@/components/sections/SectionTitle.vue";
 import TextButton from "@/components/widgets/TextButton.vue";
 import ExportPreview from "@/components/dialogs/ExportPreview.vue";
 import YasConfigurator from "../dialogs/YasConfigurator.vue";
-import { computed, nextTick, ref } from "vue";
+import { nextTick, ref } from "vue";
 import mona from "@/ys/ext/mona";
 import good from "@/ys/ext/good";
 import genmo from "@/ys/ext/genmo";
@@ -11,16 +11,13 @@ import { useArtifactStore, useYasStore } from "@/store";
 import { Artifact } from "@/ys/artifact";
 // import pparser from "@/ys/p2p/pparser";
 import { testArts } from "@/store/test";
+import { i18n } from "@/i18n";
 
 const artStore = useArtifactStore();
 const yasStore = useYasStore();
 
 const msg = ref("");
 const ok = ref(false);
-const importMsgClass = computed(() => ({
-    "import-msg": true,
-    ok: ok.value,
-}));
 const importArts = () => {
     if (yasStore.connected) {
         yasStore.sendScanReq();
@@ -33,7 +30,7 @@ const importArts = () => {
         let file = finput.files[0];
         let reader = new FileReader();
         if (file.name.endsWith(".pcap")) {
-            msg.value = "米哈游加强了数据包加密，暂不支持pcap文件解析";
+            msg.value = i18n.global.t("ui.pcapnotsupported");
             ok.value = false;
             // return;
             // reader.onload = async () => {
@@ -58,7 +55,7 @@ const importArts = () => {
         } else {
             reader.onload = (evt) => {
                 if (typeof reader.result !== "string") {
-                    msg.value = "可能不是文本文件";
+                    msg.value = i18n.global.t("ui.filenottext");
                     ok.value = false;
                     return;
                 }
@@ -83,14 +80,16 @@ const importArts = () => {
                         }
                     }
                 }
-                msg.value = `成功导入${artifacts.length}个5星圣遗物`;
+                msg.value = i18n.global.t("ui.artimported", {
+                    count: artifacts.length,
+                });
                 ok.value = true;
                 artStore.setArtifacts(artifacts, canExport);
             };
             reader.readAsText(file, "UTF-8");
         }
         reader.onerror = (evt) => {
-            msg.value = "无法读取文件";
+            msg.value = i18n.global.t("ui.filereaderr");
             ok.value = false;
         };
         finput.onchange = null;
@@ -112,31 +111,39 @@ nextTick(() => {
 
 <template>
     <div class="section">
-        <section-title title="导入">
-            <span @click="showYasConfig = true" v-if="yasStore.connected"
-                >Yas-lock配置</span
-            >
-            <span @click="openTutorial">教程</span>
+        <section-title :title="$t('ui.import')">
+            <span
+                @click="showYasConfig = true"
+                v-if="yasStore.connected"
+                v-text="$t('yas.config')"
+            />
+            <span @click="openTutorial" v-text="$t('ui.tutorial')" />
         </section-title>
         <div class="section-content">
             <template v-if="yasStore.connected">
-                <text-button @click="importArts">扫描</text-button>
+                <text-button @click="importArts" v-text="$t('yas.scan.name')" />
                 <text-button
                     style="margin-left: 20px"
                     @click="showPreview = true"
-                    >落锁</text-button
-                >
+                    v-text="$t('yas.lock.name')"
+                />
             </template>
             <template v-else>
-                <text-button @click="importArts">导入</text-button>
+                <text-button @click="importArts" v-text="$t('ui.import')" />
                 <text-button
                     style="margin-left: 20px"
                     @click="showPreview = true"
                     :disabled="!artStore.canExport"
-                    >导出
-                </text-button>
+                    v-text="$t('ui.export')"
+                />
             </template>
-            <p :class="importMsgClass">{{ msg }}</p>
+            <p
+                :class="{
+                    'import-msg': true,
+                    ok,
+                }"
+                v-text="msg"
+            />
         </div>
     </div>
     <div class="hidden">

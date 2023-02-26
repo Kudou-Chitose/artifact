@@ -89,7 +89,14 @@ export const useArtifactStore = defineStore("artifact", () => {
             // sort
             switch (sort.by) {
                 case "avg":
-                    sortResults.value = AffnumSort.sort(arts, {}, []);
+                    sortResults.value = AffnumSort.sort(arts, {}, [
+                        {
+                            set: "*",
+                            type: "*",
+                            label: "",
+                            weight: sort.weight,
+                        },
+                    ]);
                     sortResultType.value = "affnum";
                     break;
                 case "avgpro":

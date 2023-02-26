@@ -21,6 +21,8 @@ interface IAritfactData {
     mainDistr: {
         [slotKey: string]: { [key: string]: number };
     };
+    setKeys: string[];
+    slotKeys: string[];
 }
 
 export default <IAritfactData>{
@@ -208,4 +210,33 @@ export default <IAritfactData>{
             em: 2 / 50,
         },
     },
+    setKeys: [
+        "GladiatorsFinale",
+        "WanderersTroupe",
+        "Thundersoother",
+        "ThunderingFury",
+        "MaidenBeloved",
+        "ViridescentVenerer",
+        "CrimsonWitchOfFlames",
+        "Lavawalker",
+        "NoblesseOblige",
+        "BloodstainedChivalry",
+        "ArchaicPetra",
+        "RetracingBolide",
+        "BlizzardStrayer",
+        "HeartOfDepth",
+        "TenacityOfTheMillelith",
+        "PaleFlame",
+        "ShimenawasReminiscence",
+        "EmblemOfSeveredFate",
+        "HuskOfOpulentDreams",
+        "OceanHuedClam",
+        "VermillionHereafter",
+        "EchoesOfAnOffering",
+        "DeepwoodMemories",
+        "GildedDreams",
+        "DesertPavilionChronicle",
+        "FlowerOfParadiseLost",
+    ],
+    slotKeys: ["flower", "plume", "sands", "goblet", "circlet"],
 };

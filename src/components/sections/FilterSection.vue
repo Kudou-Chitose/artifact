@@ -4,7 +4,7 @@ import MultiSelect from "@/components/widgets/MultiSelect.vue";
 import SingleSelect from "@/components/widgets/SingleSelect.vue";
 import CharSelect from "@/components/widgets/CharSelect.vue";
 import RangeSlider from "@/components/widgets/RangeSlider.vue";
-import chs from "@/ys/locale/chs";
+import { i18n } from "@/i18n";
 import { computed, watch } from "vue";
 import { useArtifactStore } from "@/store";
 import { Artifact } from "@/ys/artifact";
@@ -34,11 +34,11 @@ function countArtifactAttr(key: keyof Artifact) {
 // 套装
 const setOptions = computed(() => {
     let c = countArtifactAttr("set");
-    return Object.keys(chs.set)
+    return ArtifactData.setKeys
         .filter((key) => key in c)
         .map((key) => ({
             key,
-            label: chs.set[key],
+            label: i18n.global.t("artifact.set." + key),
             icon: `./assets/artifacts/${key}/flower.webp`,
             tip: c[key].toString(),
         }));
@@ -46,11 +46,11 @@ const setOptions = computed(() => {
 // 部位
 const slotOptions = computed(() => {
     let c = countArtifactAttr("slot");
-    return Object.keys(chs.slot)
+    return ArtifactData.slotKeys
         .filter((key) => key in c)
         .map((key) => ({
             key,
-            label: chs.slot[key],
+            label: i18n.global.t("artifact.slot." + key),
             icon: `./assets/game_icons/${key}.webp`,
             tip: c[key].toString(),
         }));
@@ -62,7 +62,7 @@ const mainOptions = computed(() => {
         .filter((key) => key in c)
         .map((key) => ({
             key,
-            label: chs.affix[key],
+            label: i18n.global.t("artifact.affix." + key),
             tip: c[key].toString(),
         }));
 });
@@ -73,7 +73,10 @@ const lockOptions = computed(() => {
         .filter((key) => key in c)
         .map((key) => ({
             key,
-            label: key == "true" ? "加锁" : "解锁",
+            label:
+                key == "true"
+                    ? i18n.global.t("artifact.locked")
+                    : i18n.global.t("artifact.unlocked"),
             tip: c[key].toString(),
         }));
 });
@@ -109,34 +112,34 @@ watch(
 
 <template>
     <div class="section">
-        <section-title title="筛选">
-            <span v-show="pro" @click="pro = false">基本</span>
-            <span v-show="!pro" @click="pro = true">高级</span>
+        <section-title :title="$t('ui.filter')">
+            <span v-show="pro" @click="pro = false" v-text="$t('ui.basic')" />
+            <span v-show="!pro" @click="pro = true" v-text="$t('ui.pro')" />
         </section-title>
         <div class="section-content">
             <multi-select
                 class="filter"
-                title="套装"
+                :title="$t('ui.artset')"
                 :options="setOptions"
                 v-model="artStore.filter.set"
                 :use-icon="true"
             />
             <multi-select
                 class="filter"
-                title="部位"
+                :title="$t('ui.artslot')"
                 :options="slotOptions"
                 v-model="artStore.filter.slot"
                 :use-icon="true"
             />
             <multi-select
                 class="filter"
-                title="主词条"
+                :title="$t('ui.artmain')"
                 :options="mainOptions"
                 v-model="artStore.filter.main"
             />
             <multi-select
                 class="filter"
-                title="锁"
+                :title="$t('ui.artlock')"
                 :options="lockOptions"
                 v-model="artStore.filter.lock"
             />
@@ -144,13 +147,13 @@ watch(
             <div v-show="pro">
                 <char-select
                     class="filter"
-                    title="角色"
+                    :title="$t('ui.artlocation')"
                     :options="charOptions"
                     v-model="artStore.filter.location"
                 />
                 <single-select
                     class="filter"
-                    title="特殊筛选规则"
+                    :title="$t('ui.filterrule')"
                     :options="ruleOptions"
                     v-model="artStore.filter.ruleId"
                 />

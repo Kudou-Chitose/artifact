@@ -58,7 +58,7 @@ export default {
         let good = {
             format: "GOOD",
             version: 1,
-            source: "yas-lock",
+            source: "",
             artifacts: <any[]>[],
         };
         for (let a of artifacts) {

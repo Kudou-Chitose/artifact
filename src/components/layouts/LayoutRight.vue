@@ -15,9 +15,10 @@ const artStore = useArtifactStore();
             <filter-section />
             <sort-section />
             <div class="start-container">
-                <text-button @click="artStore.filterAndSort()"
-                    >开始计算</text-button
-                >
+                <text-button
+                    @click="artStore.filterAndSort()"
+                    v-text="$t('ui.startcalc')"
+                />
             </div>
         </el-scrollbar>
     </div>

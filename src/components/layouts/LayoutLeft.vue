@@ -23,15 +23,20 @@ import { Artifact } from "@/ys/artifact";
 const artStore = useArtifactStore();
 const uiStore = useUiStore();
 
-const stat = computed(() => {
-    let nAll = artStore.processedArtifacts.length;
-    let nFull = 0,
-        nLock = 0;
+const count = computed(() => {
+    let all = artStore.processedArtifacts.length;
+    let full = 0,
+        lock = 0;
     for (let a of artStore.processedArtifacts) {
-        if (a.level == 20) nFull++;
-        if (a.lock) nLock++;
+        if (a.level == 20) full++;
+        if (a.lock) lock++;
     }
-    return `共${nAll}个 满级${nFull}个 加锁${nLock}个 解锁${nAll - nLock}个`;
+    return {
+        all,
+        full,
+        lock,
+        unlock: all - lock,
+    };
 });
 
 const flipLock = (index: number) => {
@@ -131,9 +136,10 @@ const cancelSelect = () => {
         selection.value = [];
     }, 100);
 };
-const selectionStat = computed(() => {
-    return `已选中 ${selection.value.length}/${artStore.processedArtifacts.length}`;
-});
+const selcount = computed(() => ({
+    all: artStore.processedArtifacts.length,
+    sel: selection.value.length,
+}));
 // editor
 const showEditor = ref(false);
 const editorIndex = ref(-1);
@@ -233,7 +239,7 @@ const targetIndex = ref(-1);
     <div class="layout-left">
         <el-scrollbar ref="scrollbarRef">
             <div class="artifact-opts">
-                <div class="stat">{{ stat }}</div>
+                <div class="count" v-text="$t('ui.artcount', count)" />
                 <div class="btns">
                     <div
                         :class="{ btn: true, checked: reverseOrder }"
@@ -242,17 +248,17 @@ const targetIndex = ref(-1);
                         <el-icon>
                             <Sort />
                         </el-icon>
-                        <span>倒序</span>
+                        <span v-text="$t('ui.revord')" />
                     </div>
                     <div
                         :class="{ btn: true, checked: alikeEnabled }"
                         @click="alikeEnabled = !alikeEnabled"
-                        title="加解锁时联想相似圣遗物"
+                        :title="$t('ui.alikedesc')"
                     >
                         <el-icon>
                             <Stopwatch />
                         </el-icon>
-                        <span>联想</span>
+                        <span v-text="$t('ui.alike')" />
                     </div>
                     <div
                         :class="{ btn: true, checked: dimensionless }"
@@ -261,12 +267,12 @@ const targetIndex = ref(-1);
                         <el-icon>
                             <View />
                         </el-icon>
-                        <span>显示词条数</span>
+                        <span v-text="$t('ui.dimless')" />
                     </div>
                     <div
                         class="btn"
                         @click="showCreator = true"
-                        title="手动添加"
+                        :title="$t('ui.addart')"
                     >
                         <el-icon>
                             <circle-plus />
@@ -275,7 +281,7 @@ const targetIndex = ref(-1);
                     <div
                         class="btn"
                         @click="showGenerator = true"
-                        title="随机生成"
+                        :title="$t('randart')"
                     >
                         <el-icon>
                             <magic-stick />
@@ -306,17 +312,48 @@ const targetIndex = ref(-1);
             </Grid>
             <transition name="pop">
                 <div class="selection-bar" v-show="selectMode">
-                    <div class="btn" @click="selectAll">全选</div>
-                    <div class="btn" @click="invSelection">反选</div>
+                    <div
+                        class="btn"
+                        @click="selectAll"
+                        v-text="$t('ui.selall')"
+                    />
+                    <div
+                        class="btn"
+                        @click="invSelection"
+                        v-text="$t('ui.invsel')"
+                    />
                     <div class="split">|</div>
-                    <div class="btn" @click="lockSelection">加锁</div>
-                    <div class="btn" @click="unlockSelection">解锁</div>
+                    <div
+                        class="btn"
+                        @click="lockSelection"
+                        v-text="$t('ui.lock')"
+                    />
+                    <div
+                        class="btn"
+                        @click="unlockSelection"
+                        v-text="$t('ui.unlock')"
+                    />
                     <div class="split">|</div>
-                    <div class="btn" @click="delSelection">删除</div>
-                    <div class="btn" @click="exportSelection">部分导出</div>
+                    <div
+                        class="btn"
+                        @click="delSelection"
+                        v-text="$t('ui.del')"
+                    />
+                    <div
+                        class="btn"
+                        @click="exportSelection"
+                        v-text="$t('ui.parexpo')"
+                    />
                     <div class="split">|</div>
-                    <div class="btn" @click="cancelSelect">取消</div>
-                    <div class="selection-stat">{{ selectionStat }}</div>
+                    <div
+                        class="btn"
+                        @click="cancelSelect"
+                        v-text="$t('ui.cancel')"
+                    />
+                    <div
+                        class="selection-stat"
+                        v-text="$t('ui.selcount', selcount)"
+                    />
                 </div>
             </transition>
         </el-scrollbar>
@@ -345,7 +382,7 @@ const targetIndex = ref(-1);
         display: flex;
         align-items: center;
 
-        .stat {
+        .count {
             flex: 1;
             line-height: 36px;
         }
