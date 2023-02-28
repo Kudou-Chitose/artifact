@@ -281,7 +281,7 @@ const targetIndex = ref(-1);
                     <div
                         class="btn"
                         @click="showGenerator = true"
-                        :title="$t('randart')"
+                        :title="$t('ui.randart')"
                     >
                         <el-icon>
                             <magic-stick />
@@ -296,7 +296,7 @@ const targetIndex = ref(-1);
                 :page-size="50"
                 :page-provider="pageProvider"
             >
-                <template v-slot:default="{ item, style, index }">
+                <template v-slot:default="{ item, style, _index }">
                     <div class="artifact-cell" :style="style">
                         <artifact-card
                             :artifact="item"

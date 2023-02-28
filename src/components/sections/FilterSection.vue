@@ -75,8 +75,8 @@ const lockOptions = computed(() => {
             key,
             label:
                 key == "true"
-                    ? i18n.global.t("artifact.locked")
-                    : i18n.global.t("artifact.unlocked"),
+                    ? i18n.global.t("ui.locked")
+                    : i18n.global.t("ui.unlocked"),
             tip: c[key].toString(),
         }));
 });

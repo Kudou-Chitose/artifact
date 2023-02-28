@@ -2,8 +2,8 @@
 import { computed } from "vue";
 import { Edit, Histogram } from "@element-plus/icons-vue";
 import { Affix, Artifact } from "@/ys/artifact";
-import chs from "@/ys/locale/chs";
-import { ArtifactData } from "@/ys/data";
+import { i18n } from "@/i18n";
+import { ArtifactData, CharacterData } from "@/ys/data";
 import { useArtifactStore } from "@/store";
 import { IAffnumResult, IDefeatResult, IPBuildResult } from "@/ys/sort";
 
@@ -23,23 +23,26 @@ const emit = defineEmits<{
 const artStore = useArtifactStore();
 
 const pieceName = computed(() => {
-    if (props.artifact.set in chs.set && props.artifact.slot in chs.slot) {
-        let name = chs.set[props.artifact.set];
-        let slot = chs.slot[props.artifact.slot][2]; // "花","羽"...
+    if (
+        ArtifactData.setKeys.includes(props.artifact.set) &&
+        ArtifactData.slotKeys.includes(props.artifact.slot)
+    ) {
+        let name = i18n.global.t("artifact.set." + props.artifact.set);
+        let slot = i18n.global.t("artifact.slot_short." + props.artifact.slot);
         return `${name} · ${slot}`;
     } else {
-        return "未知";
+        return i18n.global.t("ui.unknown");
     }
 });
 const pieceImgSrc = computed(() => {
-    if (props.artifact.set in chs.set) {
+    if (ArtifactData.setKeys.includes(props.artifact.set)) {
         return `./assets/artifacts/${props.artifact.set}/${props.artifact.slot}.webp`;
     } else {
         return "";
     }
 });
 const affixName = (key: string) => {
-    let name: string = chs.affix[key];
+    let name = i18n.global.t("artifact.affix." + key);
     if (name.endsWith("%")) {
         name = name.substring(0, name.length - 1);
     }
@@ -53,11 +56,11 @@ const main = computed(() => {
                     props.artifact.level
                 ];
         return {
-            name: chs.affix[key],
+            name: i18n.global.t("artifact.affix." + key),
             value: new Affix({ key, value }).valueString(),
         };
     } else {
-        return { name: "未知", value: "0" };
+        return { name: i18n.global.t("ui.unknown"), value: "0" };
     }
 });
 const level = computed(() => {
@@ -113,7 +116,7 @@ const select = (evt: MouseEvent) => {
 };
 const starImgSrc = "./assets/stars.webp";
 const charSrc = computed<string>(() => {
-    if (props.artifact.location in chs.character) {
+    if (props.artifact.location in CharacterData) {
         return `./assets/char_sides/${props.artifact.location}.webp`;
     } else {
         return "";
@@ -206,20 +209,28 @@ const defeatResultStr = computed(() => {
             </div>
             <div class="sort-result">
                 <template v-if="sortResultDisplayType == 'affnum-mam'">
-                    <div class="min-an">
-                        最小{{ formatAffnum(affnumResult.min) }}
-                    </div>
-                    <div class="avg-an">
-                        期望{{ formatAffnum(affnumResult.avg) }}
-                    </div>
-                    <div class="max-an">
-                        最大{{ formatAffnum(affnumResult.max) }}
-                    </div>
+                    <div
+                        class="min-an"
+                        v-text="$t('ui.min') + formatAffnum(affnumResult.min)"
+                    />
+                    <div
+                        class="avg-an"
+                        v-text="$t('ui.avg') + formatAffnum(affnumResult.avg)"
+                    />
+                    <div
+                        class="max-an"
+                        v-text="$t('ui.max') + formatAffnum(affnumResult.max)"
+                    />
                 </template>
                 <template v-else-if="sortResultDisplayType == 'affnum-c'">
-                    <div class="full-an">
-                        已满级，{{ formatAffnum(affnumResult.cur) }}词条
-                    </div>
+                    <div
+                        class="full-an"
+                        v-text="
+                            $t('ui.fullaffnum', {
+                                n: formatAffnum(affnumResult.cur),
+                            })
+                        "
+                    />
                 </template>
                 <template v-else-if="sortResultDisplayType == 'pbuild'">
                     <div class="pbuild" v-text="pBuildResultStr" />
@@ -242,7 +253,7 @@ const defeatResultStr = computed(() => {
             <el-icon>
                 <Histogram />
             </el-icon>
-            <span>更多</span>
+            <span v-text="$t('ui.more')" />
         </div>
     </div>
 </template>

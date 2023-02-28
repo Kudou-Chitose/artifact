@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import MultiSelectBase from "@/components/widgets/MultiSelectBase.vue";
 import { ICharOption } from "@/store/types";
-import chs from "@/ys/locale/chs";
+import { i18n } from "@/i18n";
 import { CharacterData } from "@/ys/data";
 import { computed } from "vue";
 
@@ -17,7 +17,10 @@ const emit = defineEmits<{
 // display
 const text = (o: ICharOption) => {
     if (o.name) return o.name;
-    else return o.key ? chs.character[o.key] || o.key : "未佩戴";
+    else
+        return o.key
+            ? i18n.global.t("character." + o.key) || o.key
+            : i18n.global.t("ui.unequiped");
 };
 const icon = (o: ICharOption) => {
     if (o.key == "") {
@@ -64,7 +67,7 @@ const optionGroups = computed(() => {
         .filter((e) => e in g)
         .map((e) => ({
             icon: `./assets/game_icons/${e}.webp`,
-            text: chs.element[e],
+            text: i18n.global.t("element." + e),
             options: g[e],
         }));
     // 自定义角色
@@ -72,7 +75,7 @@ const optionGroups = computed(() => {
     if (optionsCustom.length) {
         ret.push({
             icon: "",
-            text: "自定义",
+            text: i18n.global.t("ui.custom"),
             options: optionsCustom,
         });
     }

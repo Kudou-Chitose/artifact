@@ -11,13 +11,19 @@ const yasStore = useYasStore();
             <el-icon>
                 <SuccessFilled />
             </el-icon>
-            <span style="margin-left: 5px" v-text="$t('yas.connected')" />
+            <span
+                style="margin-left: 5px"
+                v-text="$t('yas.socket.connected')"
+            />
         </div>
         <div class="msg-wrapper error" v-else>
             <el-icon>
                 <CircleCloseFilled />
             </el-icon>
-            <span style="margin-left: 5px" v-text="$t('yas.disconnected')" />
+            <span
+                style="margin-left: 5px"
+                v-text="$t('yas.socket.disconnected')"
+            />
         </div>
     </div>
 </template>

@@ -73,8 +73,13 @@
             "goblet": "空之杯",
             "circlet": "理之冠"
         },
-        "locked": "加锁",
-        "unlocked": "解锁"
+        "slot_short": {
+            "flower": "花",
+            "plume": "羽",
+            "sands": "沙",
+            "goblet": "杯",
+            "circlet": "冠"
+        }
     },
     "character": {
         "Traveler": "旅行者",
@@ -161,6 +166,8 @@
         "invsel": "反选",
         "lock": "加锁",
         "unlock": "解锁",
+        "locked": "加锁",
+        "unlocked": "解锁",
         "del": "删除",
         "parexpo": "部分导出",
         "cancel": "取消",
@@ -194,7 +201,15 @@
         "editbuilds": "修改配装",
         "loadbuild": "加载配装",
         "edittable": "修改配置",
-        "build": "配装"
+        "build": "配装",
+        "unknown": "未知",
+        "min": "最小",
+        "max": "最大",
+        "avg": "期望",
+        "fullaffnum": "已满级，{n}词条",
+        "more": "更多",
+        "custom": "自定义",
+        "unequiped": "未装备"
     },
     "sort": {
         "avg": {
