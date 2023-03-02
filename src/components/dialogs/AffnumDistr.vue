@@ -2,13 +2,12 @@
 import { graphic } from "echarts";
 import { Artifact } from "@/ys/artifact";
 import { getAffnumCDF, getIncrePDF } from "@/ys/gacha/artifact";
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useArtifactStore } from "@/store";
 import { moment, toCDF, toPDF, zeros } from "@/ys/gacha/utils";
 import { ArtifactData } from "@/ys/data";
 import { IAffnumResult } from "@/ys/sort";
-import store from "@/ys/p2p/store";
-import { retry } from "rxjs";
+import { i18n } from "@/i18n";
 
 const props = defineProps<{
     modelValue: boolean;
@@ -34,6 +33,16 @@ const toAffnum = (n: number) => {
     return n.toFixed(1);
 };
 const toProb = (p: number) => (p * 100).toFixed(1) + "%";
+function tooltipFormatter(dataIndex: number, value: number, cdf: number[]) {
+    return `<table>
+        <tr><td>${i18n.global.t("ui.affnum")}: </td>
+            <td>${toAffnum(dataIndex)}</td><tr>
+        <tr><td>${i18n.global.t("ui.prob")}: </td>
+            <td>${toProb(value)}</td><tr>
+        <tr><td>1-${i18n.global.t("ui.cumprob")}: </td>
+            <td>${toProb(1 - cdf[dataIndex])}</td><tr>
+    <table>`;
+}
 
 let pdfs = ref<
     Array<{
@@ -61,18 +70,12 @@ let option = ref({
         trigger: "axis",
         formatter: (params: any) => {
             let { dataIndex, value } = params[0];
-            return `<table>
-                <tr><td>词条数：</td><td>${toAffnum(dataIndex)}</td><tr>
-                <tr><td>概率：</td><td>${toProb(value)}</td><tr>
-                <tr><td>1-累积概率：</td><td>${toProb(
-                    1 - cdf[dataIndex]
-                )}</td><tr>
-            <table>`;
+            return tooltipFormatter(dataIndex, value, cdf);
         },
     },
     title: {
         left: "center",
-        text: "词条数概率分布",
+        text: i18n.global.t("ui.affnumdistr"),
     },
     toolbox: {
         feature: {
@@ -82,7 +85,7 @@ let option = ref({
     },
     xAxis: {
         type: "category",
-        name: "词条数",
+        name: i18n.global.t("ui.affnum"),
         nameLocation: "middle",
         nameGap: 25,
         boundaryGap: false,
@@ -90,11 +93,11 @@ let option = ref({
     },
     yAxis: {
         type: "value",
-        name: "概率",
+        name: i18n.global.t("ui.prob"),
     },
     series: [
         {
-            name: "概率",
+            name: i18n.global.t("ui.prob"),
             type: "line",
             symbol: "none",
             smooth: true,
@@ -152,18 +155,12 @@ const option2 = ref({
         trigger: "axis",
         formatter: (params: any) => {
             let { dataIndex, value } = params[0];
-            return `<table>
-                <tr><td>词条数：</td><td>${toAffnum(dataIndex)}</td><tr>
-                <tr><td>概率：</td><td>${toProb(value)}</td><tr>
-                <tr><td>1-累积概率：</td><td>${toProb(
-                    1 - cdf2[dataIndex]
-                )}</td><tr>
-            <table>`;
+            return tooltipFormatter(dataIndex, value, cdf2);
         },
     },
     title: {
         left: "center",
-        text: "同类最佳满级圣遗物词条数概率分布",
+        text: i18n.global.t("ui.bestoftype_affnumdistr"),
     },
     toolbox: {
         feature: {
@@ -173,7 +170,7 @@ const option2 = ref({
     },
     xAxis: {
         type: "category",
-        name: "词条数",
+        name: i18n.global.t("ui.affnum"),
         nameLocation: "middle",
         nameGap: 25,
         boundaryGap: false,
@@ -181,11 +178,11 @@ const option2 = ref({
     },
     yAxis: {
         type: "value",
-        name: "概率",
+        name: i18n.global.t("ui.prob"),
     },
     series: [
         {
-            name: "概率",
+            name: i18n.global.t("ui.prob"),
             type: "line",
             symbol: "none",
             smooth: true,
@@ -276,28 +273,35 @@ watch(
 </script>
 
 <template>
-    <el-dialog title="统计" v-model="show" top="2vh" width="90%">
+    <el-dialog
+        :title="$t('ui.affnumdistr')"
+        v-model="show"
+        top="2vh"
+        width="80%"
+    >
         <div class="num-wrapper">
             <div class="num">
-                <div class="desc">当前圣遗物{{ level }}级期望词条数</div>
+                <div
+                    class="desc"
+                    v-text="$t('ui.avgaffnum_atlevel', { level })"
+                />
                 <div class="value">{{ mean }}</div>
             </div>
             <div class="num">
-                <div class="desc">
-                    {{ count }}个圣遗物中最佳满级同类圣遗物期望词条数
-                </div>
+                <div
+                    class="desc"
+                    v-text="$t('ui.avgaffnum_bestofn', { count })"
+                />
                 <div class="value">{{ mean2 }}</div>
             </div>
             <div class="num">
-                <div class="desc">
-                    {{ count }}个圣遗物中当前圣遗物满级时最佳的概率
-                </div>
+                <div class="desc" v-text="$t('ui.prob_beatn', { count })" />
                 <div class="value">{{ prob }}</div>
             </div>
         </div>
         <el-divider />
         <v-chart :option="option" class="chart" autoresize />
-        <div class="row">调整等级👇</div>
+        <div class="row" v-text="$t('ui.set_level')" />
         <div class="row">
             <el-radio-group v-model="level" @change="setLevel">
                 <el-radio-button :label="p.label" v-for="p in pdfs" />
@@ -305,14 +309,12 @@ watch(
         </div>
         <el-divider />
         <v-chart :option="option2" class="chart" autoresize />
-        <div class="row">调整个数👇</div>
+        <div class="row" v-text="$t('ui.set_count')" />
         <div class="row">
             <el-radio-group v-model="count" @change="setCount">
                 <el-radio-button :label="c" v-for="c in counts" />
             </el-radio-group>
         </div>
-        <el-divider />
-        <div class="row">更多功能正在开发中...</div>
     </el-dialog>
 </template>
 

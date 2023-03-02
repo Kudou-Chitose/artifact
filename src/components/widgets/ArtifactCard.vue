@@ -72,7 +72,7 @@ const minors = computed(() => {
         let name = affixName(a.key),
             value,
             opacity = 1;
-        if (artStore.artMode.dimensionless) {
+        if (artStore.artMode.showaffnum) {
             if (["atkp", "defp", "hpp"].includes(a.key)) {
                 name += "%";
             }
@@ -243,13 +243,28 @@ const defeatResultStr = computed(() => {
         <div class="location" v-show="charSrc">
             <img :src="charSrc" />
         </div>
-        <div class="select-box" @click="select" v-show="!readonly" />
-        <div class="edit-box" @click="emit('edit')" v-show="!readonly">
+        <div
+            class="select-box"
+            @click="select"
+            v-show="!readonly"
+            role="checkbox"
+        />
+        <div
+            class="edit-box"
+            @click="emit('edit')"
+            v-show="!readonly"
+            role="button"
+        >
             <el-icon :size="16">
                 <edit />
             </el-icon>
         </div>
-        <div class="stats" @click="emit('stats')" v-show="!readonly">
+        <div
+            class="stats"
+            @click="emit('stats')"
+            v-show="!readonly"
+            role="button"
+        >
             <el-icon>
                 <Histogram />
             </el-icon>

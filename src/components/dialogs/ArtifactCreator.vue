@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed, watch } from "vue";
 import { ArtifactData } from "@/ys/data";
-import chs from "@/ys/locale/chs";
+import { i18n } from "@/i18n";
 import { useArtifactStore } from "@/store";
 import { Affix, Artifact } from "@/ys/artifact";
 import ArtifactCard from "@/components/widgets/ArtifactCard.vue";
@@ -25,7 +25,7 @@ const show = computed({
 });
 const affixes = ArtifactData.minorKeys.map((key) => ({
     value: key,
-    label: chs.affix[key],
+    label: i18n.global.t("artifact.affix." + key),
 }));
 // 圣遗物对象
 const art = ref<Artifact>(
@@ -35,14 +35,14 @@ const art = ref<Artifact>(
     })
 );
 // 套装
-const sets = Object.entries(chs.set).map(([key, label]) => ({
+const sets = ArtifactData.setKeys.map((key) => ({
     value: key,
-    label,
+    label: i18n.global.t("artifact.set." + key),
 }));
 // 部位
-const slots = Object.entries(chs.slot).map(([key, val]) => ({
+const slots = ArtifactData.slotKeys.map((key) => ({
     value: key,
-    label: val,
+    label: i18n.global.t("artifact.slot." + key),
 }));
 const slot = computed({
     get() {
@@ -61,7 +61,7 @@ const mains = computed(() => {
     if (art.value.slot in ArtifactData.mainKeys) {
         return ArtifactData.mainKeys[art.value.slot].map((key: string) => ({
             value: key,
-            label: chs.affix[key],
+            label: i18n.global.t("artifact.affix." + key),
         }));
     } else {
         return [];
@@ -158,7 +158,10 @@ const minor4value = computed<number>({
 });
 // 简单检查圣遗物合法性，如果合法就添加该圣遗物
 const valid = computed(() => {
-    return art.value.set in chs.set && art.value.minors.length >= 3;
+    return (
+        ArtifactData.setKeys.includes(art.value.set) &&
+        art.value.minors.length >= 3
+    );
 });
 const save = () => {
     // 必须新建一个对象
@@ -175,11 +178,11 @@ const save = () => {
 </script>
 
 <template>
-    <el-dialog v-model="show" title="手动添加圣遗物" top="8vh">
-        <el-divider>主要属性</el-divider>
+    <el-dialog v-model="show" :title="$t('ui.add_art_manually')" top="8vh">
+        <el-divider>{{ $t("ui.main_attrs") }}</el-divider>
         <el-row :gutter="20">
             <el-col :span="3">
-                <span>套装</span>
+                <span>{{ $t("ui.artset") }}</span>
             </el-col>
             <el-col :span="9">
                 <el-select v-model="art.set">
@@ -191,7 +194,7 @@ const save = () => {
                 </el-select>
             </el-col>
             <el-col :span="3">
-                <span>主词条</span>
+                <span>{{ $t("ui.artmain") }}</span>
             </el-col>
             <el-col :span="9">
                 <el-select v-model="art.mainKey">
@@ -205,7 +208,7 @@ const save = () => {
         </el-row>
         <el-row :gutter="20">
             <el-col :span="3">
-                <span>部位</span>
+                <span>{{ $t("ui.artslot") }}</span>
             </el-col>
             <el-col :span="9">
                 <el-select v-model="slot">
@@ -217,13 +220,13 @@ const save = () => {
                 </el-select>
             </el-col>
             <el-col :span="3">
-                <span>等级</span>
+                <span>{{ $t("ui.artlevel") }}</span>
             </el-col>
             <el-col :span="9">
                 <el-input-number v-model="level" :min="0" :max="20" />
             </el-col>
         </el-row>
-        <el-divider>副词条</el-divider>
+        <el-divider>{{ $t("ui.minor_affixes") }}</el-divider>
         <el-row :gutter="20">
             <el-col :span="12">
                 <el-select v-model="minor1key">
@@ -269,7 +272,7 @@ const save = () => {
         <el-row :gutter="20">
             <el-col :span="12">
                 <el-select v-model="minor4key">
-                    <el-option label="空" value=""></el-option>
+                    <el-option :label="$t('ui.empty')" value="" />
                     <el-option
                         v-for="o in affixes"
                         :label="o.label"
@@ -281,14 +284,17 @@ const save = () => {
                 <el-input-number v-model="minor4value" :precision="1" />
             </el-col>
         </el-row>
-        <el-divider>预览</el-divider>
+        <el-divider>{{ $t("ui.preview") }}</el-divider>
         <el-row justify="center">
             <artifact-card :artifact="art" :readonly="true" />
         </el-row>
         <el-row justify="center" style="margin-top: 30px">
-            <el-button type="primary" :disabled="!valid" @click="save"
-                >添加</el-button
-            >
+            <el-button
+                type="primary"
+                :disabled="!valid"
+                @click="save"
+                v-text="$t('ui.confirm')"
+            />
         </el-row>
     </el-dialog>
 </template>

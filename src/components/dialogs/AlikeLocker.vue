@@ -3,7 +3,7 @@ import { computed, ref, watch } from "vue";
 import { Artifact } from "@/ys/artifact";
 import { useArtifactStore } from "@/store";
 import ArtifactCard from "@/components/widgets/ArtifactCard.vue";
-import { retry } from "rxjs";
+import { i18n } from "@/i18n";
 
 const props = defineProps<{
     modelValue: boolean;
@@ -103,13 +103,6 @@ watch(
 );
 // 加/解锁
 const targetLock = ref(false);
-const msg = computed(
-    () =>
-        `你可能还想${targetLock.value ? "加锁" : "解锁"}以下圣遗物（共${
-            artAlike.value.length
-        }个）`
-);
-const btnText = computed(() => (targetLock.value ? "全部加锁" : "全部解锁"));
 const click = () => {
     artStore.setLocks(
         artAlike.value.map((a) => a.data.index),
@@ -120,8 +113,16 @@ const click = () => {
 </script>
 
 <template>
-    <el-dialog title="圣遗物联想" v-model="show" top="8vh">
-        <div class="small-title" style="margin-top: 10px">{{ msg }}</div>
+    <el-dialog :title="$t('ui.art_alike')" v-model="show" top="8vh">
+        <div
+            class="small-title"
+            style="margin-top: 10px"
+            v-text="
+                targetLock
+                    ? $t('ui.suggest_lock', { count: artAlike.length })
+                    : $t('ui.suggest_unlock', { count: artAlike.length })
+            "
+        />
         <div
             class="preview-artifact-list"
             v-infinite-scroll="loadArtAlike"
@@ -136,7 +137,11 @@ const click = () => {
             />
         </div>
         <div style="margin-top: 10px; text-align: center">
-            <el-button type="primary" @click="click">{{ btnText }}</el-button>
+            <el-button
+                type="primary"
+                @click="click"
+                v-text="targetLock ? $t('ui.lock_all') : $t('ui.unlock_all')"
+            />
         </div>
     </el-dialog>
 </template>

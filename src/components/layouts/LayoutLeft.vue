@@ -209,13 +209,13 @@ const affnumMultiplier = computed({
         artStore.artMode.affnumMultiplier = v;
     },
 });
-// 显示无量纲数值
-const dimensionless = computed({
+// 显示词条数
+const showaffnum = computed({
     get() {
-        return artStore.artMode.dimensionless;
+        return artStore.artMode.showaffnum;
     },
     set(v) {
-        artStore.artMode.dimensionless = v;
+        artStore.artMode.showaffnum = v;
     },
 });
 // 手动添加
@@ -261,13 +261,13 @@ const targetIndex = ref(-1);
                         <span v-text="$t('ui.alike')" />
                     </div>
                     <div
-                        :class="{ btn: true, checked: dimensionless }"
-                        @click="dimensionless = !dimensionless"
+                        :class="{ btn: true, checked: showaffnum }"
+                        @click="showaffnum = !showaffnum"
                     >
                         <el-icon>
                             <View />
                         </el-icon>
-                        <span v-text="$t('ui.dimless')" />
+                        <span v-text="$t('ui.showaffnum')" />
                     </div>
                     <div
                         class="btn"

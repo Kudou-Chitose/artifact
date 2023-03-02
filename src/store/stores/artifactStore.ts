@@ -53,9 +53,9 @@ export const useArtifactStore = defineStore("artifact", () => {
     const sortResultType = ref<ISortResultType>();
     const canExport = ref(false);
     const artMode = reactive({
-        dimensionless: false,
+        showaffnum: false,
         reverseOrder: false,
-        alikeEnabled: false,
+        alikeEnabled: true,
         affnumMultiplier: 1 / 0.85,
     });
     const nResetFilter = ref(0);
