@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { ref, computed, watch } from "vue";
-import chs from "@/ys/locale/chs";
 import { useArtifactStore } from "@/store";
 import { Affix, Artifact } from "@/ys/artifact";
 import ArtifactCard from "@/components/widgets/ArtifactCard.vue";
 import { ArtifactData, CharacterData } from "@/ys/data";
+import { i18n } from "@/i18n";
 
 const props = defineProps<{
     modelValue: boolean;
@@ -36,15 +36,15 @@ const characters = computed(() => {
     let ret = [
         {
             label: "",
-            options: [{ value: "", label: "闲置" }],
+            options: [{ value: "", label: i18n.global.t("ui.unequiped") }],
         },
     ];
     for (let element in tmp) {
         ret.push({
-            label: chs.element[element] || "",
+            label: i18n.global.t("element." + element),
             options: tmp[element].map((key) => ({
                 value: key,
-                label: chs.character[key],
+                label: i18n.global.t("character." + key),
             })),
         });
     }
@@ -52,7 +52,7 @@ const characters = computed(() => {
 });
 const affixes = ArtifactData.minorKeys.map((key) => ({
     value: key,
-    label: chs.affix[key],
+    label: i18n.global.t("artifact.affix." + key),
 }));
 let equiped: { [key: string]: { [key: string]: boolean } } = {};
 const modified = ref(false);
@@ -219,11 +219,11 @@ const toSwap = computed(() => {
 });
 const equipMsg = computed<string>(() => {
     if (toSwap.value) {
-        let char_name = chs.character[newArt.value.location];
+        let char_name = i18n.global.t("character." + newArt.value.location);
         if (oldArt.value.location) {
-            return `将与 ${char_name} 的圣遗物对调`;
+            return i18n.global.t("ui.swap_art_of", { char_name });
         } else {
-            return `将替换 ${char_name} 的圣遗物`;
+            return i18n.global.t("ui.replace_art_of", { char_name });
         }
     } else {
         return "";
@@ -236,11 +236,11 @@ const save = () => {
 </script>
 
 <template>
-    <el-dialog v-model="show" title="属性编辑器" top="8vh">
-        <el-divider>主要属性</el-divider>
+    <el-dialog v-model="show" :title="$t('ui.art_editor')" top="8vh">
+        <el-divider>{{ $t("ui.main_attrs") }}</el-divider>
         <el-row :gutter="20">
             <el-col :span="3">
-                <span>角色</span>
+                <span>{{ $t("ui.art_location") }}</span>
             </el-col>
             <el-col :span="9">
                 <el-select v-model="location">
@@ -254,13 +254,13 @@ const save = () => {
                 </el-select>
             </el-col>
             <el-col :span="3">
-                <span>等级</span>
+                <span>{{ $t("ui.art_level") }}</span>
             </el-col>
             <el-col :span="9">
                 <el-input-number v-model="level" :min="0" :max="20" />
             </el-col>
         </el-row>
-        <el-divider>副词条</el-divider>
+        <el-divider>{{ $t("ui.minor_affixes") }}</el-divider>
         <el-row :gutter="20">
             <el-col :span="12">
                 <el-select v-model="minor1key">
@@ -306,7 +306,7 @@ const save = () => {
         <el-row :gutter="20">
             <el-col :span="12">
                 <el-select v-model="minor4key">
-                    <el-option label="空" value=""></el-option>
+                    <el-option :label="$t('ui.empty')" value="" />
                     <el-option
                         v-for="o in affixes"
                         :label="o.label"
@@ -318,7 +318,7 @@ const save = () => {
                 <el-input-number v-model="minor4value" :precision="1" />
             </el-col>
         </el-row>
-        <el-divider>预览</el-divider>
+        <el-divider>{{ $t("ui.preview") }}</el-divider>
         <el-row justify="center">
             <artifact-card :artifact="oldArt" :readonly="true" />
             <div class="art-preview-split" v-show="modified">⇒</div>

@@ -30,7 +30,7 @@ const importArts = () => {
         let file = finput.files[0];
         let reader = new FileReader();
         if (file.name.endsWith(".pcap")) {
-            msg.value = i18n.global.t("ui.pcapnotsupported");
+            msg.value = i18n.global.t("ui.pcap_not_supp");
             ok.value = false;
             // return;
             // reader.onload = async () => {
@@ -55,7 +55,7 @@ const importArts = () => {
         } else {
             reader.onload = (evt) => {
                 if (typeof reader.result !== "string") {
-                    msg.value = i18n.global.t("ui.filenottext");
+                    msg.value = i18n.global.t("ui.file_not_text");
                     ok.value = false;
                     return;
                 }
@@ -80,7 +80,7 @@ const importArts = () => {
                         }
                     }
                 }
-                msg.value = i18n.global.t("ui.artimported", {
+                msg.value = i18n.global.t("ui.art_imported", {
                     count: artifacts.length,
                 });
                 ok.value = true;
@@ -89,7 +89,7 @@ const importArts = () => {
             reader.readAsText(file, "UTF-8");
         }
         reader.onerror = (evt) => {
-            msg.value = i18n.global.t("ui.filereaderr");
+            msg.value = i18n.global.t("ui.cant_read_file");
             ok.value = false;
         };
         finput.onchange = null;

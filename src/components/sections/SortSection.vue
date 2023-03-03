@@ -81,13 +81,14 @@ const openBuildEditor = () => (showBuildEditor.value = true);
                     <span
                         class="text-btn"
                         @click="openPresetLoader"
-                        v-text="$t('ui.loadpreset')"
+                        v-text="$t('ui.load_preset')"
+                        role="button"
                     />
                 </p>
                 <p
                     class="info"
                     style="margin-top: 10px"
-                    v-text="$t('ui.weighthelp')"
+                    v-text="$t('ui.weight_btn_help')"
                 />
                 <value-button
                     class="weight-button"
@@ -101,7 +102,7 @@ const openBuildEditor = () => (showBuildEditor.value = true);
                 <p class="row small" v-text="$t('sort.avg.desc')" />
                 <p class="row small" v-text="$t('sort.avgpro.desc')" />
                 <p class="row small">
-                    <span class="text-btn" v-text="$t('ui.edittable')" />
+                    <span class="text-btn" v-text="$t('ui.edit_table')" />
                 </p>
             </div>
             <div v-else-if="artStore.sort.by == 'pmulti'">
@@ -111,7 +112,8 @@ const openBuildEditor = () => (showBuildEditor.value = true);
                     <span
                         class="text-btn"
                         @click="openBuildEditor"
-                        v-text="$t('ui.editbuilds')"
+                        v-text="$t('ui.edit_builds')"
+                        role="button"
                     />
                 </p>
                 <char-select
@@ -128,18 +130,20 @@ const openBuildEditor = () => (showBuildEditor.value = true);
                         class="text-btn"
                         @click="openBuildEditor"
                         style="margin-right: 8px"
-                        v-text="$t('ui.editbuilds')"
+                        v-text="$t('ui.edit_builds')"
+                        role="button"
                     />
                     <span
                         class="text-btn"
                         @click="openBuildLoader"
-                        v-text="$t('ui.loadbuild')"
+                        v-text="$t('ui.load_build')"
+                        role="button"
                     />
                 </p>
                 <p
                     class="info"
                     style="margin-top: 10px"
-                    v-text="$t('ui.weighthelp')"
+                    v-text="$t('ui.weight_btn_help')"
                 />
                 <value-button
                     class="weight-button"

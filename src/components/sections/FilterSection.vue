@@ -119,27 +119,27 @@ watch(
         <div class="section-content">
             <multi-select
                 class="filter"
-                :title="$t('ui.artset')"
+                :title="$t('ui.art_set')"
                 :options="setOptions"
                 v-model="artStore.filter.set"
                 :use-icon="true"
             />
             <multi-select
                 class="filter"
-                :title="$t('ui.artslot')"
+                :title="$t('ui.art_slot')"
                 :options="slotOptions"
                 v-model="artStore.filter.slot"
                 :use-icon="true"
             />
             <multi-select
                 class="filter"
-                :title="$t('ui.artmain')"
+                :title="$t('ui.art_main')"
                 :options="mainOptions"
                 v-model="artStore.filter.main"
             />
             <multi-select
                 class="filter"
-                :title="$t('ui.artlock')"
+                :title="$t('ui.art_lock')"
                 :options="lockOptions"
                 v-model="artStore.filter.lock"
             />
@@ -147,13 +147,13 @@ watch(
             <div v-show="pro">
                 <char-select
                     class="filter"
-                    :title="$t('ui.artlocation')"
+                    :title="$t('ui.art_location')"
                     :options="charOptions"
                     v-model="artStore.filter.location"
                 />
                 <single-select
                     class="filter"
-                    :title="$t('ui.filterrule')"
+                    :title="$t('ui.filter_rule')"
                     :options="ruleOptions"
                     v-model="artStore.filter.ruleId"
                 />

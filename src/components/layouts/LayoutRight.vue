@@ -17,7 +17,7 @@ const artStore = useArtifactStore();
             <div class="start-container">
                 <text-button
                     @click="artStore.filterAndSort()"
-                    v-text="$t('ui.startcalc')"
+                    v-text="$t('ui.start_calc')"
                 />
             </div>
         </el-scrollbar>

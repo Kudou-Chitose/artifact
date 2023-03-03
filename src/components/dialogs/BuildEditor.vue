@@ -2,8 +2,8 @@
 import { ref, computed, watch, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { ArtifactData, CharacterData } from "@/ys/data";
-import chs from "@/ys/locale/chs";
 import { useArtifactStore } from "@/store";
+import { i18n } from "@/i18n";
 
 const props = defineProps<{
     modelValue: boolean;
@@ -28,13 +28,13 @@ const elements = ["pyro", "hydro", "cryo", "electro", "anemo", "geo", "dendro"]
     .map((e) => ({
         element: e,
         icon: `./assets/game_icons/${e}.webp`,
-        text: chs.element[e],
+        text: i18n.global.t("element." + e),
     }))
     .concat([
         {
             element: "custom",
             icon: "",
-            text: "自定义",
+            text: i18n.global.t("ui.custom"),
         },
     ]);
 interface IAvatar {
@@ -82,21 +82,21 @@ const avatarClass = (key: string) => ({
     avatar: true,
     selected: key == selectedBuildKey.value,
 });
-const setOptions = Object.entries(chs.set).map((p) => ({
-    key: p[0],
-    label: p[1],
+const setOptions = ArtifactData.setKeys.map((key) => ({
+    key,
+    label: i18n.global.t("artifact.set." + key),
 }));
-const sandsOptions = ArtifactData.mainKeys.sands.map((m) => ({
-    key: m,
-    label: chs.affix[m],
+const sandsOptions = ArtifactData.mainKeys.sands.map((key) => ({
+    key,
+    label: i18n.global.t("artifact.affix." + key),
 }));
-const gobletOptions = ArtifactData.mainKeys.goblet.map((m) => ({
-    key: m,
-    label: chs.affix[m],
+const gobletOptions = ArtifactData.mainKeys.goblet.map((key) => ({
+    key,
+    label: i18n.global.t("artifact.affix." + key),
 }));
-const circletOptions = ArtifactData.mainKeys.circlet.map((m) => ({
-    key: m,
-    label: chs.affix[m],
+const circletOptions = ArtifactData.mainKeys.circlet.map((key) => ({
+    key,
+    label: i18n.global.t("artifact.affix." + key),
 }));
 const build = reactive({
     name: "",
@@ -138,7 +138,13 @@ const selectBuild = (key?: string) => {
 selectBuild();
 const minorKeys = ["hpp", "atkp", "defp", "em", "er", "cr", "cd"];
 const rules = reactive({
-    name: [{ required: true, message: "必填", trigger: "blur" }],
+    name: [
+        {
+            required: true,
+            message: i18n.global.t("ui.required"),
+            trigger: "blur",
+        },
+    ],
     weightJson: [
         {
             required: true,
@@ -146,20 +152,41 @@ const rules = reactive({
                 try {
                     let w = JSON.parse(value);
                     if (typeof w != "object")
-                        return callback(new Error("格式错误"));
+                        return callback(
+                            new Error(i18n.global.t("ui.format_err"))
+                        );
                     if (minorKeys.length != Object.keys(w).length)
-                        return callback(new Error("键缺失或多余"));
+                        return callback(
+                            new Error(i18n.global.t("ui.key_missing_or_redunt"))
+                        );
                     for (let key in w) {
                         if (!minorKeys.includes(key))
-                            return callback(new Error("不存在的键：" + key));
+                            return callback(
+                                new Error(
+                                    i18n.global.t("ui.key_not_exist", { key })
+                                )
+                            );
                         if (typeof w[key] != "number")
-                            return callback(new Error(key + "的值不是数值"));
+                            return callback(
+                                new Error(
+                                    i18n.global.t("ui.valofkey_not_num", {
+                                        key,
+                                    })
+                                )
+                            );
                         if (w[key] < 0 || w[key] > 1)
-                            return callback(new Error(key + "的值不在[0,1]内"));
+                            return callback(
+                                new Error(
+                                    i18n.global.t(
+                                        "ui.valofkey_not_between_0_1",
+                                        { key }
+                                    )
+                                )
+                            );
                     }
                     callback();
                 } catch {
-                    callback(new Error("语法错误"));
+                    callback(new Error(i18n.global.t("ui.syntax_err")));
                 }
             },
             trigger: "blur",
@@ -167,6 +194,7 @@ const rules = reactive({
     ],
 });
 const formEl = ref<any>(null);
+
 // actions
 const saveBuild = (formEl: any) => {
     if (!formEl) return;
@@ -198,7 +226,7 @@ const saveBuild = (formEl: any) => {
                     weight: JSON.parse(build.weightJson),
                 });
             }
-            ElMessage({ message: "保存成功", type: "success" });
+            ElMessage({ message: i18n.global.t("ui.saved"), type: "success" });
         }
     });
 };
@@ -210,7 +238,7 @@ const _resetBuild = (key: string) => {
     if (!b) return;
     let c = CharacterData[key];
     if (!c) return;
-    b.name = chs.character[key];
+    b.name = i18n.global.t("character." + key);
     b.set = [...c.build.set];
     b.main.sands = [...c.build.main.sands];
     b.main.goblet = [...c.build.main.goblet];
@@ -222,48 +250,41 @@ const resetBuild = () => {
         _resetBuild(selectedBuildKey.value);
         selectBuild(selectedBuildKey.value);
         artStore.builds = artStore.builds;
-        ElMessage({ message: "重置成功", type: "success" });
+        ElMessage({ message: i18n.global.t("ui.reseted"), type: "success" });
     }
 };
+
+function popConfirm(msg: string) {
+    return ElMessageBox.confirm(msg, i18n.global.t("ui.warning"), {
+        confirmButtonText: i18n.global.t("ui.confirm"),
+        cancelButtonText: i18n.global.t("ui.cancel"),
+        type: "warning",
+    });
+}
+
 const resetAllBuilds = () => {
-    ElMessageBox.confirm(
-        "将会重置所有角色配装（自定义配装除外），是否继续？",
-        "警告",
-        {
-            confirmButtonText: "确认",
-            cancelButtonText: "取消",
-            type: "warning",
-        }
-    ).then(() => {
+    popConfirm(i18n.global.t("ui.confirm_reset_builds")).then(() => {
         Object.keys(CharacterData).forEach((key) => _resetBuild(key));
-        ElMessage({ message: "重置成功", type: "success" });
+        ElMessage({ message: i18n.global.t("ui.reseted"), type: "success" });
     });
 };
 const delCustomBuild = () => {
-    ElMessageBox.confirm(
-        `将会删除自定义配装：${build.name}，是否继续？`,
-        "警告",
-        {
-            confirmButtonText: "确认",
-            cancelButtonText: "取消",
-            type: "warning",
-        }
+    popConfirm(
+        i18n.global.t("ui.confirm_del_custom_build", {
+            build_name: build.name,
+        })
     ).then(() => {
         artStore.builds = artStore.builds.filter(
             (b) => b.key != selectedBuildKey.value
         );
-        ElMessage({ message: "删除成功", type: "success" });
+        ElMessage({ message: i18n.global.t("ui.deleted"), type: "success" });
         selectBuild();
     });
 };
 const delCustomBuilds = () => {
-    ElMessageBox.confirm("将会删除所有自定义配装，是否继续？", "警告", {
-        confirmButtonText: "确认",
-        cancelButtonText: "取消",
-        type: "warning",
-    }).then(() => {
+    popConfirm(i18n.global.t("ui.confirm_del_all_custom_builds")).then(() => {
         artStore.builds = artStore.builds.filter((b) => !b.key.startsWith("0"));
-        ElMessage({ message: "删除成功", type: "success" });
+        ElMessage({ message: i18n.global.t("ui.deleted"), type: "success" });
         if (selectedBuildKey.value.startsWith("0")) {
             selectBuild();
         }
@@ -272,15 +293,30 @@ const delCustomBuilds = () => {
 </script>
 
 <template>
-    <el-dialog v-model="show" title="修改角色配装" top="2vh" width="90%">
+    <el-dialog
+        v-model="show"
+        :title="$t('ui.build_editor')"
+        top="2vh"
+        width="90%"
+    >
         <div id="root">
             <div id="left">
                 <div id="left-top">
-                    <span class="button" @click="addBuild">新增配装</span>
-                    <span class="button" @click="resetAllBuilds">全部重置</span>
-                    <span class="button" @click="delCustomBuilds"
-                        >删除自定义配装</span
-                    >
+                    <span
+                        class="button"
+                        @click="addBuild"
+                        v-text="$t('ui.add_build')"
+                    />
+                    <span
+                        class="button"
+                        @click="resetAllBuilds"
+                        v-text="$t('ui.reset_builds')"
+                    />
+                    <span
+                        class="button"
+                        @click="delCustomBuilds"
+                        v-text="$t('ui.del_all_custom_builds')"
+                    />
                 </div>
                 <div id="left-body">
                     <el-scrollbar>
@@ -321,10 +357,10 @@ const delCustomBuilds = () => {
                         :rules="rules"
                         label-width="80px"
                     >
-                        <el-form-item label="角色名" prop="name">
+                        <el-form-item :label="$t('ui.build_name')" prop="name">
                             <el-input v-model="build.name" />
                         </el-form-item>
-                        <el-form-item label="套装">
+                        <el-form-item :label="$t('ui.art_set')">
                             <el-select
                                 v-model="build.set"
                                 multiple
@@ -337,7 +373,7 @@ const delCustomBuilds = () => {
                                 />
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="时之沙">
+                        <el-form-item :label="$t('artifact.slot.sands')">
                             <el-select
                                 v-model="build.sands"
                                 multiple
@@ -350,7 +386,7 @@ const delCustomBuilds = () => {
                                 />
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="空之杯">
+                        <el-form-item :label="$t('artifact.slot.goblet')">
                             <el-select
                                 v-model="build.goblet"
                                 multiple
@@ -363,7 +399,7 @@ const delCustomBuilds = () => {
                                 />
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="理之冠">
+                        <el-form-item :label="$t('artifact.slot.circlet')">
                             <el-select
                                 v-model="build.circlet"
                                 multiple
@@ -376,7 +412,10 @@ const delCustomBuilds = () => {
                                 />
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="词条权重" prop="weightJson">
+                        <el-form-item
+                            :label="$t('ui.affix_weight')"
+                            prop="weightJson"
+                        >
                             <el-input
                                 v-model="build.weightJson"
                                 autosize
@@ -390,41 +429,35 @@ const delCustomBuilds = () => {
                                 show-icon
                                 :closable="false"
                                 style="line-height: 1.4"
-                            >
-                                hpp=大生命，atkp=大攻击，defp=大防御，em=精通，er=充能，cr=暴击，cd=爆伤。
-                                小攻/生/防权重为0。
-                            </el-alert>
+                                :description="$t('ui.weight_json_help')"
+                            />
                         </el-form-item>
                         <el-form-item>
                             <el-button
+                                v-if="isCustom"
                                 type="danger"
                                 @click="delCustomBuild"
-                                v-if="isCustom"
                                 :disabled="isNew"
-                                >删除</el-button
-                            >
-                            <el-button @click="resetBuild" v-else
-                                >恢复默认</el-button
-                            >
-                            <el-button type="primary" @click="saveBuild(formEl)"
-                                >保存</el-button
-                            >
+                                v-text="$t('ui.del')"
+                            />
+                            <el-button
+                                v-else
+                                @click="resetBuild"
+                                v-text="$t('ui.reset')"
+                            />
+                            <el-button
+                                type="primary"
+                                @click="saveBuild(formEl)"
+                                v-text="$t('ui.save')"
+                            />
                         </el-form-item>
                     </el-form>
                     <el-alert
-                        title="关于默认配装"
+                        :title="$t('ui.about_default_builds')"
                         type="info"
                         v-show="!isCustom"
                     >
-                        默认配装是作者个人根据
-                        <a href="https://ngabbs.com/read.php?tid=27859119"
-                            >NGA推荐配装</a
-                        >
-                        更新的。如有错漏或不及时之处欢迎提
-                        <a href="https://github.com/ideless/artifact/issues"
-                            >Issue</a
-                        >
-                        ！
+                        <p v-html="$t('ui.default_builds_desc')" />
                     </el-alert>
                 </el-scrollbar>
             </div>

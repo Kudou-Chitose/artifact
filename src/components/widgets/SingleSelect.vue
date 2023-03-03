@@ -34,6 +34,7 @@ const select = (key: string | number) => {
                 :class="{ option: true, selected: o.key == modelValue }"
                 v-for="o in options"
                 @click="select(o.key)"
+                role="menuitem"
             >
                 <span class="label">{{ o.label }}</span>
                 <span class="tip">{{ o.tip }}</span>

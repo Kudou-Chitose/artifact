@@ -182,7 +182,7 @@ const save = () => {
         <el-divider>{{ $t("ui.main_attrs") }}</el-divider>
         <el-row :gutter="20">
             <el-col :span="3">
-                <span>{{ $t("ui.artset") }}</span>
+                <span>{{ $t("ui.art_set") }}</span>
             </el-col>
             <el-col :span="9">
                 <el-select v-model="art.set">
@@ -194,7 +194,7 @@ const save = () => {
                 </el-select>
             </el-col>
             <el-col :span="3">
-                <span>{{ $t("ui.artmain") }}</span>
+                <span>{{ $t("ui.art_main") }}</span>
             </el-col>
             <el-col :span="9">
                 <el-select v-model="art.mainKey">
@@ -208,7 +208,7 @@ const save = () => {
         </el-row>
         <el-row :gutter="20">
             <el-col :span="3">
-                <span>{{ $t("ui.artslot") }}</span>
+                <span>{{ $t("ui.art_slot") }}</span>
             </el-col>
             <el-col :span="9">
                 <el-select v-model="slot">
@@ -220,7 +220,7 @@ const save = () => {
                 </el-select>
             </el-col>
             <el-col :span="3">
-                <span>{{ $t("ui.artlevel") }}</span>
+                <span>{{ $t("ui.art_level") }}</span>
             </el-col>
             <el-col :span="9">
                 <el-input-number v-model="level" :min="0" :max="20" />

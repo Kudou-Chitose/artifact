@@ -239,21 +239,23 @@ const targetIndex = ref(-1);
     <div class="layout-left">
         <el-scrollbar ref="scrollbarRef">
             <div class="artifact-opts">
-                <div class="count" v-text="$t('ui.artcount', count)" />
+                <div class="count" v-text="$t('ui.art_count', count)" />
                 <div class="btns">
                     <div
                         :class="{ btn: true, checked: reverseOrder }"
                         @click="reverseOrder = !reverseOrder"
+                        role="button"
                     >
                         <el-icon>
                             <Sort />
                         </el-icon>
-                        <span v-text="$t('ui.revord')" />
+                        <span v-text="$t('ui.rev_ord')" />
                     </div>
                     <div
                         :class="{ btn: true, checked: alikeEnabled }"
                         @click="alikeEnabled = !alikeEnabled"
-                        :title="$t('ui.alikedesc')"
+                        :title="$t('ui.alike_desc')"
+                        role="button"
                     >
                         <el-icon>
                             <Stopwatch />
@@ -263,6 +265,7 @@ const targetIndex = ref(-1);
                     <div
                         :class="{ btn: true, checked: showaffnum }"
                         @click="showaffnum = !showaffnum"
+                        role="button"
                     >
                         <el-icon>
                             <View />
@@ -272,7 +275,8 @@ const targetIndex = ref(-1);
                     <div
                         class="btn"
                         @click="showCreator = true"
-                        :title="$t('ui.addart')"
+                        :title="$t('ui.add_art')"
+                        role="button"
                     >
                         <el-icon>
                             <circle-plus />
@@ -281,7 +285,8 @@ const targetIndex = ref(-1);
                     <div
                         class="btn"
                         @click="showGenerator = true"
-                        :title="$t('ui.randart')"
+                        :title="$t('ui.gen_rand_art')"
+                        role="button"
                     >
                         <el-icon>
                             <magic-stick />
@@ -315,12 +320,12 @@ const targetIndex = ref(-1);
                     <div
                         class="btn"
                         @click="selectAll"
-                        v-text="$t('ui.selall')"
+                        v-text="$t('ui.sel_all')"
                     />
                     <div
                         class="btn"
                         @click="invSelection"
-                        v-text="$t('ui.invsel')"
+                        v-text="$t('ui.inv_sel')"
                     />
                     <div class="split">|</div>
                     <div
@@ -342,7 +347,7 @@ const targetIndex = ref(-1);
                     <div
                         class="btn"
                         @click="exportSelection"
-                        v-text="$t('ui.parexpo')"
+                        v-text="$t('ui.partial_expo')"
                     />
                     <div class="split">|</div>
                     <div
@@ -352,7 +357,7 @@ const targetIndex = ref(-1);
                     />
                     <div
                         class="selection-stat"
-                        v-text="$t('ui.selcount', selcount)"
+                        v-text="$t('ui.sel_count', selcount)"
                     />
                 </div>
             </transition>
