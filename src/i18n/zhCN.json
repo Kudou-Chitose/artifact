@@ -14,7 +14,21 @@
             "connected": "Yas-lock已连接",
             "disconnected": "Yas-lock已断开"
         },
-        "config": "Yas-lock配置"
+        "config": {
+            "name": "Yas-lock配置",
+            "max_row": "最大扫描行数",
+            "min_star": "最小星级",
+            "min_level": "最小等级",
+            "speed": "速度（如提示大量重复尝试降低速度）",
+            "number": "指定圣遗物数量（在自动识别数量不准确时使用）",
+            "lock_stop": "加解锁停顿时间",
+            "default_stop": "等待动画、鼠标点击等操作的默认停顿时间",
+            "scroll_stop": "页面滚动停顿时间",
+            "max_wait_switch_artifact": "切换圣遗物最大等待时间",
+            "max_wait_scroll": "翻页的最大等待时间（翻页不正确可以考虑加大该选项）",
+            "no_check": "不检测是否已打开背包等",
+            "dxgcap": "使用dxgcap捕获屏幕"
+        }
     },
     "artifact": {
         "set": {
@@ -174,7 +188,7 @@
         "rev_ord": "倒序",
         "alike": "联想",
         "alike_desc": "加解锁时联想相似圣遗物",
-        "showaffnum": "显示词条数",
+        "normalize_affixes": "显示提升量",
         "add_art": "手动添加",
         "gen_rand_art": "随机生成",
         "start_calc": "开始计算",
@@ -263,7 +277,35 @@
         "reset": "重置",
         "save": "保存",
         "about_default_builds": "关于默认配装",
-        "default_builds_desc": "默认配装是作者个人根据<a href='https://ngabbs.com/read.php?tid=27859119'>NGA推荐配装</a>更新的。如有错漏或不及时之处欢迎提<a href='https://github.com/ideless/artifact/issues'>Issue</a>！"
+        "default_builds_desc": "默认配装是作者个人根据<a href='https://ngabbs.com/read.php?tid=27859119'>NGA推荐配装</a>更新的。如有错漏或不及时之处欢迎提<a href='https://github.com/ideless/artifact/issues'>Issue</a>！",
+        "default_builds_source": "数据来自<a href='https://ngabbs.com/read.php?tid=27859119'>全角色圣遗物及武器搭配简述 [NGA]</a>",
+        "element": "元素类型",
+        "character": "角色",
+        "build_loader_title": "加载默认配装",
+        "defeat_list_title": "上位替代",
+        "defeat_count": "当前圣遗物有{count}个上位替代",
+        "export_preview_title": "导出预览",
+        "export_help": "此功能用于导出加解锁信息，然后经由yas-lock同步到游戏，详情见<a href='./tutorial' target='_blank'>教程</a>",
+        "arts_to_lock": "以下圣遗物将被加锁 (共{count}个)",
+        "arts_to_unlock": "以下圣遗物将被解锁 (共{count}个)",
+        "remember_lock_change": "记住本次更改，下次导出时将不再包含以上圣遗物",
+        "use_lock_v2": "导出格式为v2（yas-lock v1.0.9-beta1起支持）",
+        "export_lock_validation": "导出验证数据",
+        "unknown_format": "未知格式",
+        "copied": "复制成功",
+        "copy_failed": "复制失败",
+        "partial_export_title": "导出部分圣遗物",
+        "mona_format": "莫娜占卜铺格式",
+        "genmo_format": "原魔计算器格式",
+        "good_format": "Genshin Optimizer格式",
+        "download": "下载",
+        "copy": "复制",
+        "preset_loader_title": "加载预设",
+        "preset_source": "数据来自<a href='http://spongem.com/ajglz/ys/ys.html'>圣遗物副词条数便捷计算器</a>",
+        "preset": "预设",
+        "yas_configurator_title": "Yas-lock 配置",
+        "general": "通用",
+        "millisecond": "毫秒"
     },
     "sort": {
         "avg": {

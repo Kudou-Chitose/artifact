@@ -209,15 +209,6 @@ const affnumMultiplier = computed({
         artStore.artMode.affnumMultiplier = v;
     },
 });
-// 显示词条数
-const showaffnum = computed({
-    get() {
-        return artStore.artMode.showaffnum;
-    },
-    set(v) {
-        artStore.artMode.showaffnum = v;
-    },
-});
 // 手动添加
 const showCreator = ref(false);
 // 随机生成
@@ -263,14 +254,20 @@ const targetIndex = ref(-1);
                         <span v-text="$t('ui.alike')" />
                     </div>
                     <div
-                        :class="{ btn: true, checked: showaffnum }"
-                        @click="showaffnum = !showaffnum"
+                        :class="{
+                            btn: true,
+                            checked: artStore.artMode.normalize,
+                        }"
+                        @click="
+                            artStore.artMode.normalize =
+                                !artStore.artMode.normalize
+                        "
                         role="button"
                     >
                         <el-icon>
                             <View />
                         </el-icon>
-                        <span v-text="$t('ui.showaffnum')" />
+                        <span v-text="$t('ui.normalize_affixes')" />
                     </div>
                     <div
                         class="btn"

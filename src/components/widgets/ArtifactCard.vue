@@ -72,12 +72,11 @@ const minors = computed(() => {
         let name = affixName(a.key),
             value,
             opacity = 1;
-        if (artStore.artMode.showaffnum) {
+        if (artStore.artMode.normalize) {
             if (["atkp", "defp", "hpp"].includes(a.key)) {
                 name += "%";
             }
             value = a.value / ArtifactData.minorStat[a.key];
-            value *= artStore.artMode.affnumMultiplier;
             value = value.toFixed(1);
         } else {
             value = a.valueString();

@@ -62,10 +62,11 @@ watch(
 </script>
 
 <template>
-    <el-dialog title="上位替代" v-model="show" top="8vh">
-        <p class="small-title">
-            当前圣遗物有{{ defeatByList.length }}个上位替代
-        </p>
+    <el-dialog :title="$t('ui.defeat_list_title')" v-model="show" top="8vh">
+        <p
+            class="small-title"
+            v-text="$t('ui.defeat_count', { count: defeatByList.length })"
+        />
         <div
             class="preview-artifact-list"
             v-infinite-scroll="loadDefeatByList"

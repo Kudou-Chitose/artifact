@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
 import { useArtifactStore } from "@/store";
-import chs from "@/ys/locale/chs";
 import { CharacterData } from "@/ys/data";
+import { MiscData } from "@/ys/data";
 
 const artStore = useArtifactStore();
 
@@ -63,28 +63,23 @@ const apply = () => {
 </script>
 
 <template>
-    <el-dialog title="词条权重预设" v-model="show">
-        <p class="info">
-            数据来自
-            <a href="https://ngabbs.com/read.php?tid=27859119"
-                >全角色圣遗物及武器搭配简述 [NGA]</a
-            >
-        </p>
+    <el-dialog :title="$t('ui.build_loader_title')" v-model="show">
+        <p class="info" v-html="$t('ui.default_builds_source')" />
         <el-row justify="space-between">
-            <el-col :span="8">元素类型</el-col>
+            <el-col :span="8" v-text="$t('ui.element')" />
             <el-col :span="8">
                 <el-select v-model="element" @change="changeElement">
                     <el-option
-                        v-for="(label, value) in chs.element"
-                        :label="label"
-                        :value="value"
+                        v-for="e in MiscData.elementKeys"
+                        :label="$t('element.' + e)"
+                        :value="e"
                     />
-                    <el-option label="自定义" value="custom" />
+                    <el-option :label="$t('ui.custom')" value="custom" />
                 </el-select>
             </el-col>
         </el-row>
         <el-row justify="space-between">
-            <el-col :span="8">角色</el-col>
+            <el-col :span="8" v-text="$t('ui.character')" />
             <el-col :span="8">
                 <el-select v-model="character">
                     <el-option
@@ -96,9 +91,12 @@ const apply = () => {
             </el-col>
         </el-row>
         <el-row justify="center" style="margin-top: 30px">
-            <el-button type="primary" @click="apply" :disabled="!valid"
-                >应用</el-button
-            >
+            <el-button
+                type="primary"
+                @click="apply"
+                :disabled="!valid"
+                v-text="$t('ui.confirm')"
+            />
         </el-row>
     </el-dialog>
 </template>

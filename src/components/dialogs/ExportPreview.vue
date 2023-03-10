@@ -127,22 +127,13 @@ const exportArts = () => {
 </script>
 
 <template>
-    <el-dialog title="导出预览" v-model="show" top="8vh">
-        <p>
-            此功能用于导出加解锁信息，然后经由yas-lock同步到游戏，详情见<a
-                href="./tutorial"
-                target="_blank"
-                >教程</a
-            >
-        </p>
-        <el-alert type="warning" style="margin-top: 10px">
-            <template #title>
-                确保背包内圣遗物的<b>位置</b>没有发生变化，并且打开yas-lock前将打开圣遗物背包并翻到<b>最顶部</b>！！
-            </template>
-        </el-alert>
-        <div class="small-title" style="margin-top: 10px">
-            以下圣遗物将被加锁 (共{{ artToLock.length }}个)
-        </div>
+    <el-dialog :title="$t('ui.export_preview_title')" v-model="show" top="8vh">
+        <p v-text="$t('ui.export_help')" />
+        <div
+            class="small-title"
+            style="margin-top: 10px"
+            v-text="$t('ui.arts_to_lock', { count: artToLock.length })"
+        />
         <div
             class="preview-artifact-list"
             v-infinite-scroll="loadArtToLock"
@@ -156,9 +147,11 @@ const exportArts = () => {
                 :readonly="true"
             />
         </div>
-        <div class="small-title" style="margin-top: 10px">
-            以下圣遗物将被解锁 (共{{ artToUnlock.length }}个)
-        </div>
+        <div
+            class="small-title"
+            style="margin-top: 10px"
+            v-text="$t('ui.arts_to_unlock', { count: artToUnlock.length })"
+        />
         <div
             class="preview-artifact-list"
             v-infinite-scroll="loadArtToUnlock"
@@ -173,18 +166,23 @@ const exportArts = () => {
             />
         </div>
         <div style="margin-top: 10px" v-show="!yasStore.connected">
-            <el-checkbox v-model="remember"
-                >记住本次更改，下次导出时将不再包含以上圣遗物</el-checkbox
-            ><br />
-            <el-checkbox v-model="useLockV2"
-                >导出格式为v2（yas-lock v1.0.9-beta1起支持）</el-checkbox
-            >
-            <el-checkbox v-model="exportValidation" :disabled="!useLockV2"
-                >导出验证数据</el-checkbox
-            >
+            <el-checkbox v-model="remember">{{
+                $t("ui.remember_lock_change")
+            }}</el-checkbox>
+            <br />
+            <el-checkbox v-model="useLockV2">{{
+                $t("ui.use_lock_v2")
+            }}</el-checkbox>
+            <el-checkbox v-model="exportValidation" :disabled="!useLockV2">{{
+                $t("ui.export_lock_validation")
+            }}</el-checkbox>
         </div>
         <div style="margin-top: 10px; text-align: center">
-            <el-button type="primary" @click="exportArts">导出</el-button>
+            <el-button
+                type="primary"
+                @click="exportArts"
+                v-text="$t('ui.export')"
+            />
         </div>
     </el-dialog>
 </template>

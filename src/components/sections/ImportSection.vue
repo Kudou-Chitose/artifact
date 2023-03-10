@@ -115,7 +115,7 @@ nextTick(() => {
             <span
                 @click="showYasConfig = true"
                 v-if="yasStore.connected"
-                v-text="$t('yas.config')"
+                v-text="$t('yas.config.name')"
             />
             <span @click="openTutorial" v-text="$t('ui.tutorial')" />
         </section-title>
