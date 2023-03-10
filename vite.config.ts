@@ -8,7 +8,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { resolve } from 'path'
 
 export default defineConfig({
-    base: '',
+    base: './',
     resolve: {
         alias: {
             "@": resolve(__dirname, "src"),
